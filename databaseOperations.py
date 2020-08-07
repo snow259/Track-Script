@@ -66,6 +66,17 @@ def returnDatabaseContents():
 
 	return rows
 
+def returnRow(rowId):
+	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
+	database = sqlite3.connect(databasePath)
+	database.row_factory = sqlite3.Row
+	cursor = database.cursor()
+	cursor.execute(returnRowString, (rowId, ))
+	row = cursor.fetchall()
+	database.close()
+
+	return row
+
 #Writes session to database
 def writeSession(rowId, name, startTime, endTime, duration):
 	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'

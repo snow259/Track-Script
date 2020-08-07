@@ -1,7 +1,7 @@
 import datetime as dt
 import calendar
 import databaseOperations as dataops
-import timeFunctions
+import timeFunctions as tf
 
 #Checks database for open session of game, attempts repair if more than one open session is discovered
 def checkSession():
@@ -51,12 +51,15 @@ def checkDuration():
 def inputStart():
 	inputString = input('Enter game: ')
 	dateAndTimeRaw = dt.datetime.now()
-	gameTime = roundTime(dateAndTimeRaw)
-	gameTime = removeSeconds(gameTime)
+	gameTime = tf.roundTime(dateAndTimeRaw)
+	gameTime = tf.removeSeconds(gameTime)
 
-	if inputString == 'modify':
+	if inputString == 'edit':
 		listSessions()
-		modify()
+		editSession()
+	elif inputString == 'delete':
+		listSessions()
+		deleteSession()
 	elif inputString == 'list':
 		listSessions()
 	elif inputString == 'exit':
@@ -71,8 +74,8 @@ def inputEnd(rowId):
 	choice = ''
 	while choice != 'close' and  choice != 'delete' and choice != 'input':
 		choice = input('Options: close, delete, input\n')
-	endTime = roundTime(dt.datetime.now())
-	endTime = removeSeconds(endTime)
+	endTime = tf.roundTime(dt.datetime.now())
+	endTime = tf.removeSeconds(endTime)
 
 	if choice == 'close':
 		dataops.closeSession(endTime)
@@ -81,17 +84,6 @@ def inputEnd(rowId):
 		deleteSession(rowId)
 	elif choice == 'input':
 		userInputEndTime()
-
-def deleteSession(rowId = None):
-	if rowId == None:
-		rowIdRaw = input('Enter ids to delete: ')
-		rowIds = rowIdRaw.split()
-		for rowId in rowIds:
-			dataops.deleteSession(int(rowId))
-	else:
-		dataops.deleteSession(rowId)
-
-	checkSession()
 
 def userInputEndTime():
 	inputCorrect = False
@@ -103,10 +95,9 @@ def userInputEndTime():
 			inputCorrect = True
 
 	userEndTime = userEndTime.rstrip()
-	# userEndTime = dt.datetime.strptime(userEndTime, '%Y-%m-%d %H:%M:%S')
-	userEndTime = stringToDatetime(userEndTime)
-	userEndTime = roundTime(userEndTime)
-	endTime = removeSeconds(userEndTime)
+	userEndTime = tf.stringToDatetime(userEndTime)
+	userEndTime = tf.roundTime(userEndTime)
+	endTime = tf.removeSeconds(userEndTime)
 	dataops.closeSession(endTime)
 	checkSession()
 
@@ -114,98 +105,86 @@ def calculateDuration(rowId):
 	times = dataops.returnTimes(rowId)
 	startTime = times[0]['startTime']
 	endTime = times[0]['endTime']
-	# startTime = dt.datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
-	# endTime = dt.datetime.strptime(endTime, '%Y-%m-%d %H:%M:%S')
-	startTime = stringToDatetime(startTime)
-	endTime = stringToDatetime(endTime)
+	startTime = tf.stringToDatetime(startTime)
+	endTime = tf.stringToDatetime(endTime)
 	duration = str(endTime - startTime)
-	# duration = dt.datetime.strftime(duration, '%H:%M:%S')
 	dataops.writeDuration(rowId, duration)
 
-def listSessions():
-	rows = dataops.returnDatabaseContents()
-	if len(rows) == 0:
-		print('No sessions found in database')
+def listSessions(rowIds = None):
+	if rowIds == None:
+		rows = dataops.returnDatabaseContents()
+		if len(rows) == 0:
+			print('No sessions found in database')
+		if len(rows) > 0:
+			for row in rows:
+				outString = rowString(row)
+				print(outString)
+	else:
+		rows = []
+		for rowId in rowIds:
+			rows.append(dataops.returnRow(rowId))
 
-	if len(rows) > 0:
 		for row in rows:
-			rowId = 'id: ' + str(row['id'])
-			name = 'name: ' + str(row['name'])
-			startTime = 'start: ' + str(row['startTime'])
-			endTime = 'end: ' + str(row['endTime'])
-			duration = 'duration: ' + str(row['duration'])
-			outString = ''
-			listOfElements = [rowId, name, startTime, endTime, duration]
-			for element in listOfElements:
-				outString = outString + element + '	'
+			outString = rowString(row[0])	#Each row returned is a list, of which the elements are the rows
 			print(outString)
 
-def modify():
-	action = ''
-	while action != 'delete' and action != 'modify' and action != 'cancel':
-		action = input('Select action: delete, modify, cancel\n')
-	if action == 'cancel':
-		checkSession()
+def rowString(row):
+	rowId = 'id: ' + str(row['id'])
+	name = 'name: ' + str(row['name'])
+	startTime = 'start: ' + str(row['startTime'])
+	endTime = 'end: ' + str(row['endTime'])
+	duration = 'duration: ' + str(row['duration'])
+	rowString = ''
+	listOfElements = [rowId, name, startTime, endTime, duration]
+	for element in listOfElements:
+		rowString = rowString + element + '	'
 
-	if action == 'delete':
-		deleteSession()
+	return rowString
 
-	if action == 'modify':
-		modifySession()
-
-def modifySession():
-	listSessions()
+#Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
+def editSession():
 	rowId = input('Enter id of session to be modified: ')
-	validKey = False
-	keys = ['name', 'startTime', 'endTime']
-	while validKey == False:
-		key = input('Enter key (name, startTime, endTime): ')
-		if keys.count(key) == 1:
-			validKey = True
+	#If not cancel, proceed with rest of function
+	if rowId != 'cancel':
+		listSessions(rowId)
+		validKey = False
+		keys = ['name', 'startTime', 'endTime', 'cancel']
+		while validKey == False:
+			key = input('Enter key (name, startTime, endTime): ')
+			if keys.count(key) == 1:
+				validKey = True
 
-	value = input('Enter new value: ')
+		#If key not cancel, proceed with accepting new value
+		if key != 'cancel':
+			value = input('Enter new value: ')
 
-	if key == 'startTime' or key == 'endTime':
-		value = roundTime(value)
-		value = removeSeconds(value)
+			if key == 'startTime' or key == 'endTime':
+				value = tf.roundTime(value)
+				value = tf.removeSeconds(value)
+			
+				dataops.modifySession(rowId, key, value)
 
-	dataops.modifySession(rowId, key, value)
+			if key == 'startTime' or key == 'endTime':
+				calculateDuration(rowId)
 
-	if key == 'startTime' or key == 'endTime':
-		calculateDuration(rowId)
+			print('Edited session now is:')
+			listSessions(rowId)
 
-#Returns number of days in requested month
-def daysInMonth(dateAndTime):
-	year = dateAndTime['year']
-	month = dateAndTime['month']
+#If rowId is none, user input is taken. If it is not none, specified row is deleted
+def deleteSession(rowId = None):
+	if rowId == None:
+		rowIdRaw = input('Enter ids to delete: ')
+		if rowIdRaw != 'cancel':
+			rowIds = rowIdRaw.split()
+			print('The following sessions will be deleted: ')
+			listSessions(rowIds)
+			proceed = input('Proceed? (y/n)')
+			if proceed == 'y':
+				for rowId in rowIds:
+					dataops.deleteSession(int(rowId))
+	else:
+		dataops.deleteSession(rowId)
 
-	days = calendar.monthrange(year, month)[1]
-	return days
-
-#Rounds time to nearest minute, second is not used elsewhere in code
-def roundTime(dateAndTimeRaw):
-	inputType = str(type(dateAndTimeRaw))
-	if 'str' in inputType:
-		dateAndTimeRaw = stringToDatetime(dateAndTimeRaw)
-
-	if dateAndTimeRaw.second >= 30:
-		oneMinute = dt.timedelta(minutes = 1)
-		dateAndTimeRaw = dateAndTimeRaw + oneMinute
-
-	return dateAndTimeRaw
-
-#Gets rid of the seconds part of time, as second level accuracy is not used
-def removeSeconds(gameTime):
-	second = gameTime.second
-	microsecond = gameTime.microsecond
-	secondValues = dt.timedelta(seconds = second, microseconds = microsecond)
-	gameTime = gameTime - secondValues
-
-	return gameTime
-
-def stringToDatetime(dateTimeString):
-	dateTime = dt.datetime.strptime(dateTimeString, '%Y-%m-%d %H:%M:%S')
-
-	return dateTime
+	checkSession()
 
 checkSession()
