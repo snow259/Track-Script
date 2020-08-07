@@ -30,8 +30,6 @@ def checkOpenSessions():
 	cursor = database.cursor()
 	cursor.execute('SELECT id, name, startTime FROM Games WHERE endTime IS ?', (None, ))
 	rows = cursor.fetchall()
-	# for row in rows:
-	# 	print(str(row['id']) + ' ' + str(row['name']) + ' ' + str(row['startTime']))
 	database.close()
 
 	return rows
@@ -46,6 +44,17 @@ def checkDurations():
 	database.close()
 
 	return rows
+
+def returnTimes(rowId):
+	returnTimesString = 'SELECT startTime, endTime FROM Games WHERE id IS ?'
+	database = sqlite3.connect(databasePath)
+	database.row_factory = sqlite3.Row
+	cursor = database.cursor()
+	cursor.execute(returnTimesString, (rowId, ))
+	times = cursor.fetchall()
+	database.close()
+
+	return times
 
 def returnDatabaseContents():
 	database = sqlite3.connect(databasePath)
@@ -85,12 +94,18 @@ def deleteSession(rowId):
 	database.close()
 
 def writeDuration(rowId, duration):
-	print(rowId)
-	print(duration)
 	writeDurationString = 'UPDATE Games SET duration = ? WHERE id IS ?'
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
 	cursor.execute(writeDurationString, (duration, rowId))
+	database.commit()
+	database.close()
+
+def modifySession(rowId, key, value):
+	modifyEntryString = 'UPDATE Games SET ' + key + ' = ? WHERE id IS ?'
+	database = sqlite3.connect(databasePath)
+	cursor = database.cursor()
+	cursor.execute(modifyEntryString, (value, int(rowId)))
 	database.commit()
 	database.close()
 
@@ -99,5 +114,3 @@ def writeDuration(rowId, duration):
 
 checkForDataFolder()
 checkForDatabase()
-# writeSession(None, 'Test3', dt.datetime.now(), None, None)
-checkOpenSessions()

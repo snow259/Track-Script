@@ -1,6 +1,7 @@
 import datetime as dt
 import calendar
 import databaseOperations as dataops
+import timeFunctions
 
 #Checks database for open session of game, attempts repair if more than one open session is discovered
 def checkSession():
@@ -41,9 +42,9 @@ def checkDuration():
 	if len(rows) > 0:
 		for row in rows:
 			rowId = row['id']
-			startTime = row['startTime']
-			endTime = row['endTime']
-			calculateDuration(rowId, startTime, endTime)
+			# startTime = row['startTime']
+			# endTime = row['endTime']
+			calculateDuration(rowId)
 
 
 #Takes input from user, reads current time
@@ -102,16 +103,21 @@ def userInputEndTime():
 			inputCorrect = True
 
 	userEndTime = userEndTime.rstrip()
-	print(userEndTime)
-	userEndTime = dt.datetime.strptime(userEndTime, '%Y-%m-%d %H:%M:%S')
+	# userEndTime = dt.datetime.strptime(userEndTime, '%Y-%m-%d %H:%M:%S')
+	userEndTime = stringToDatetime(userEndTime)
 	userEndTime = roundTime(userEndTime)
 	endTime = removeSeconds(userEndTime)
 	dataops.closeSession(endTime)
 	checkSession()
 
-def calculateDuration(rowId, startTime, endTime):
-	startTime = dt.datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
-	endTime = dt.datetime.strptime(endTime, '%Y-%m-%d %H:%M:%S')
+def calculateDuration(rowId):
+	times = dataops.returnTimes(rowId)
+	startTime = times[0]['startTime']
+	endTime = times[0]['endTime']
+	# startTime = dt.datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
+	# endTime = dt.datetime.strptime(endTime, '%Y-%m-%d %H:%M:%S')
+	startTime = stringToDatetime(startTime)
+	endTime = stringToDatetime(endTime)
 	duration = str(endTime - startTime)
 	# duration = dt.datetime.strftime(duration, '%H:%M:%S')
 	dataops.writeDuration(rowId, duration)
@@ -123,11 +129,11 @@ def listSessions():
 
 	if len(rows) > 0:
 		for row in rows:
-			rowId = str(row['id'])
-			name = str(row['name'])
-			startTime = str(row['startTime'])
-			endTime = str(row['endTime'])
-			duration = str(row['duration'])
+			rowId = 'id: ' + str(row['id'])
+			name = 'name: ' + str(row['name'])
+			startTime = 'start: ' + str(row['startTime'])
+			endTime = 'end: ' + str(row['endTime'])
+			duration = 'duration: ' + str(row['duration'])
 			outString = ''
 			listOfElements = [rowId, name, startTime, endTime, duration]
 			for element in listOfElements:
@@ -144,6 +150,30 @@ def modify():
 	if action == 'delete':
 		deleteSession()
 
+	if action == 'modify':
+		modifySession()
+
+def modifySession():
+	listSessions()
+	rowId = input('Enter id of session to be modified: ')
+	validKey = False
+	keys = ['name', 'startTime', 'endTime']
+	while validKey == False:
+		key = input('Enter key (name, startTime, endTime): ')
+		if keys.count(key) == 1:
+			validKey = True
+
+	value = input('Enter new value: ')
+
+	if key == 'startTime' or key == 'endTime':
+		value = roundTime(value)
+		value = removeSeconds(value)
+
+	dataops.modifySession(rowId, key, value)
+
+	if key == 'startTime' or key == 'endTime':
+		calculateDuration(rowId)
+
 #Returns number of days in requested month
 def daysInMonth(dateAndTime):
 	year = dateAndTime['year']
@@ -154,6 +184,10 @@ def daysInMonth(dateAndTime):
 
 #Rounds time to nearest minute, second is not used elsewhere in code
 def roundTime(dateAndTimeRaw):
+	inputType = str(type(dateAndTimeRaw))
+	if 'str' in inputType:
+		dateAndTimeRaw = stringToDatetime(dateAndTimeRaw)
+
 	if dateAndTimeRaw.second >= 30:
 		oneMinute = dt.timedelta(minutes = 1)
 		dateAndTimeRaw = dateAndTimeRaw + oneMinute
@@ -169,11 +203,9 @@ def removeSeconds(gameTime):
 
 	return gameTime
 
-def exit():
-	print('Exiting')
+def stringToDatetime(dateTimeString):
+	dateTime = dt.datetime.strptime(dateTimeString, '%Y-%m-%d %H:%M:%S')
+
+	return dateTime
 
 checkSession()
-
-#Input game -> stuff to write thing to database
-#			-> function to input end time of game, as only one game can be played at a time
-#put input game in a while loop in __main__, with exit condition 
