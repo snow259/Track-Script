@@ -16,31 +16,43 @@ def backupMain(mainBackupPath):
 	backupMainString = 'VACUUM INTO ' + mainBackupPath
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
-	database.execute(backupMainString)
-	database.close()
+	try:
+		database.execute(backupMainString)
+	finally:
+		database.close()
 
 #Uses vacuum into to create a backup
 def backupArchive(archiveBackupPath):
 	backupArchiveString = 'VACUUM INTO ' + archiveBackupPath
 	archive = sqlite3.connect(archivePath)
 	cursor = archive.cursor()
-	cursor.execute(backupArchiveString)
-	archive.close()
+	try:
+		cursor.execute(backupArchiveString)
+	finally:
+		archive.close()
 
 #Appends mainDatabase into archiveDatabase
 def archive():
 	attachString = 'ATTACH ' + '"' + databasePath + '" AS mainDatabase'
-	detachString = 'DETACH mainDatabase'
+	detachString = 'DETACH DATABASE mainDatabase'
 	selectString = 'SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
 	insertString = 'INSERT INTO Games(name, startTime, endTime, duration) SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
 	conn = sqlite3.connect(archivePath)
 	cursor = conn.cursor()
-	cursor.execute(attachString)
-	cursor.execute(selectString)
-	cursor.execute(insertString)
-	# cursor.execute(detachString)
-	conn.commit()
-	conn.close()
+	try:
+		cursor.execute(attachString)
+		cursor.execute(selectString)
+		cursor.execute(insertString)
+	except Exception as e:
+		print('Error in archive()')
+		print(e)
+		print('Rolling back!')
+		conn.rollback()
+	else:
+		conn.commit()
+	finally:
+		cursor.execute(detachString)
+		conn.close()
 
 def checkForBackupDirectories():
 	dirList = os.listdir(fileDirectory)
