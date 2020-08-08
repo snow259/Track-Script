@@ -33,3 +33,14 @@ def stringToDatetime(dateTimeString):
 	dateTime = dt.datetime.strptime(dateTimeString, '%Y-%m-%d %H:%M:%S')
 
 	return dateTime
+
+def datetimeToString(dateTime, backUp = True):
+	if backUp == True:
+		dateTimeString = dt.datetime.strftime(dateTime, '%Y%m%d%H%M%S')
+
+	return dateTimeString
+
+def dateToString(dateTime):
+	dateString = dt.datetime.strftime(dateTime, '%Y-%m-%d')
+
+	return dateString

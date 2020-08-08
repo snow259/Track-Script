@@ -1,13 +1,24 @@
 import datetime as dt
+import os
 import calendar
 import databaseOperations as dataops
+import storageOperations as storeops
 import timeFunctions as tf
+
+#All paths used
+#filePath is path to this file, its directory is fileDirectory
+filePath = os.path.realpath(__file__)
+fileDirectory = os.path.dirname(filePath)
+dataDirectory = fileDirectory + '\\Data'
+backupDirectory = fileDirectory + '\\Backup'
+databasePath = dataDirectory + '\\mainDatabase.db'
 
 #Checks database for open session of game, attempts repair if more than one open session is discovered
 def checkSession():
 	rows = dataops.checkOpenSessions()
 	if len(rows) == 0:
 		checkDuration()
+		backup()
 		inputStart()
 
 	if len(rows) == 1:
@@ -62,6 +73,8 @@ def inputStart():
 		deleteSession()
 	elif inputString == 'list':
 		listSessions()
+	elif inputString == 'backup':
+		backup(automatic = False)
 	elif inputString == 'exit':
 		pass
 	else:
@@ -186,5 +199,42 @@ def deleteSession(rowId = None):
 		dataops.deleteSession(rowId)
 
 	checkSession()
+
+def backup(automatic = True):
+	now = dt.datetime.now()
+	date = tf.dateToString(now)
+
+	if automatic == True:
+		rows = dataops.returnAllStartTimes()
+		if len(rows) > 1:
+			sameDate = True	#Checks if any startTimes already stored are from any day other than today. Backup if it is.
+			for row in rows:
+				if date not in row['startTime']:
+					print(date)
+					print(row['startTime'])
+					sameDate = False
+					break
+
+			if sameDate == False:
+				runBackupOperations()
+	elif automatic == False:
+		runBackupOperations()
+
+
+def runBackupOperations():
+	backupMainPath = generateBackupPath('Main')
+	backupArchivePath = generateBackupPath('Archive')
+	storeops.backupArchive(backupArchivePath)
+	storeops.archive()
+	storeops.backupMain(backupMainPath)
+	dataops.deleteAllMain()
+	dataops.vacuumMain()
+
+def generateBackupPath(backupName):
+	now = dt.datetime.now()
+	pathSuffix = tf.datetimeToString(now)
+	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
+
+	return backupPath
 
 checkSession()

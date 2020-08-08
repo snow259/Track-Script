@@ -2,18 +2,21 @@ import sqlite3
 import os
 import datetime as dt
 
+#All paths used
+#filePath is path to this file, its directory is fileDirectory
 filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
 dataDirectory = fileDirectory + '\\Data'
 backupDirectory = fileDirectory + '\\Backup'
 databasePath = dataDirectory + '\\mainDatabase.db'
 
-#Checks if database exists, creates elsewise
+#Checks if folder for databases exists, creates elsewise
 def checkForDataFolder():
 	dirList = os.listdir(fileDirectory)
 	if dirList.count('Data') == 0:
 		os.mkdir(dataDirectory)
 
+#Checks if database exists, creases elsewise
 def checkForDatabase():
 	dirList = os.listdir(dataDirectory)
 	if dirList.count('mainDatabase.db') == 0:
@@ -22,7 +25,6 @@ def checkForDatabase():
 		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TEXT)')
 		database.close()
 
-#Todo: add code for multiple open session repair, with option to select session by id, then delete or close it with entered time
 #Checks for an open session
 def checkOpenSessions():
 	database = sqlite3.connect(databasePath)
@@ -34,6 +36,7 @@ def checkOpenSessions():
 
 	return rows
 
+#Finds any sessions with both times entered and duration not computed
 def checkDurations():
 	database = sqlite3.connect(databasePath)
 	database.row_factory = sqlite3.Row
@@ -45,6 +48,7 @@ def checkDurations():
 
 	return rows
 
+#Returns start and end times of specified session
 def returnTimes(rowId):
 	returnTimesString = 'SELECT startTime, endTime FROM Games WHERE id IS ?'
 	database = sqlite3.connect(databasePath)
@@ -56,6 +60,18 @@ def returnTimes(rowId):
 
 	return times
 
+def returnAllStartTimes():
+	returnAllStartTimesString = 'SELECT startTime FROM Games'
+	database = sqlite3.connect(databasePath)
+	database.row_factory = sqlite3.Row
+	cursor = database.cursor()
+	cursor.execute(returnAllStartTimesString)
+	startTimes = cursor.fetchall()
+	database.close()
+
+	return startTimes
+
+#Returns all rows
 def returnDatabaseContents():
 	database = sqlite3.connect(databasePath)
 	database.row_factory = sqlite3.Row
@@ -66,6 +82,7 @@ def returnDatabaseContents():
 
 	return rows
 
+#Returns single, specified row
 def returnRow(rowId):
 	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
 	database = sqlite3.connect(databasePath)
@@ -104,6 +121,7 @@ def deleteSession(rowId):
 	database.commit()
 	database.close()
 
+#Writes the duration of a session
 def writeDuration(rowId, duration):
 	writeDurationString = 'UPDATE Games SET duration = ? WHERE id IS ?'
 	database = sqlite3.connect(databasePath)
@@ -112,6 +130,7 @@ def writeDuration(rowId, duration):
 	database.commit()
 	database.close()
 
+#Allows editing of the name, start, and end times of a session. Duration is recomputed after, in track.py
 def modifySession(rowId, key, value):
 	modifyEntryString = 'UPDATE Games SET ' + key + ' = ? WHERE id IS ?'
 	database = sqlite3.connect(databasePath)
@@ -120,8 +139,20 @@ def modifySession(rowId, key, value):
 	database.commit()
 	database.close()
 
-#Creates a backup of the database
-# def backupDatabase():
+def deleteAllMain():
+	deleteAllMainString = 'DELETE FROM Games'
+	database = sqlite3.connect(databasePath)
+	cursor = database.cursor()
+	cursor.execute(deleteAllMainString)
+	database.commit()
+	database.close()
+
+def vacuumMain():
+	vacuumMainString = 'VACUUM'
+	database = sqlite3.connect(databasePath)
+	database.execute(vacuumMainString)
+	database.commit()
+	database.close()
 
 checkForDataFolder()
 checkForDatabase()
