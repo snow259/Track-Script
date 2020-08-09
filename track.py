@@ -12,6 +12,7 @@ fileDirectory = os.path.dirname(filePath)
 dataDirectory = fileDirectory + '\\Data'
 backupDirectory = fileDirectory + '\\Backup'
 databasePath = dataDirectory + '\\mainDatabase.db'
+backupInterval = 5	#Value is in days
 
 #Checks database for open session of game, attempts repair if more than one open session is discovered
 def checkSession():
@@ -38,14 +39,14 @@ def checkSession():
 			startTime = row['startTime']
 			outString = str(rowId) + ' ' + str(game) + ' ' + str(startTime)
 			print(outString)
-		# print('Repair options: close, delete')
+
 		repairOption = ''
 		while repairOption != 'close' and repairOption != 'delete':
 			repairOption = input('Repair options: close, delete\n')
 
-		# if repairOption == 'close':
-
-		if repairOption == 'delete':
+		if repairOption == 'close':
+			rowId = input('Enter id of session to close:\n')
+		elif repairOption == 'delete':
 			deleteSession()
 
 def checkDuration():
@@ -53,10 +54,16 @@ def checkDuration():
 	if len(rows) > 0:
 		for row in rows:
 			rowId = row['id']
-			# startTime = row['startTime']
-			# endTime = row['endTime']
 			calculateDuration(rowId)
 
+def calculateDuration(rowId):
+	times = dataops.returnTimes(rowId)
+	startTime = times[0]['startTime']
+	endTime = times[0]['endTime']
+	startTime = tf.stringToDatetime(startTime)
+	endTime = tf.stringToDatetime(endTime)
+	duration = str(endTime - startTime)
+	dataops.writeDuration(rowId, duration)
 
 #Takes input from user, reads current time
 def inputStart():
@@ -98,31 +105,31 @@ def inputEnd(rowId):
 	elif choice == 'input':
 		userInputEndTime()
 
-def userInputEndTime():
+def userInputEndTime(rowId = None):
 	inputCorrect = False
 	while inputCorrect == False:
 		userEndTime = input('Enter end time in format: YYYY-MM-DD HH:MM:SS\n')
+		userEndTime = userEndTime.strip()
 		isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)'
 		isThisRight = input(isThisRightString)
 		if isThisRight == 'y':
 			inputCorrect = True
 
-	userEndTime = userEndTime.rstrip()
+	#Processes input time for insertion
 	userEndTime = tf.stringToDatetime(userEndTime)
 	userEndTime = tf.roundTime(userEndTime)
 	endTime = tf.removeSeconds(userEndTime)
-	dataops.closeSession(endTime)
+
+	#rowId defaults to None, and session is closed via closeSession as normal. If rowId is provided, modifySession is used instead to edit endTime
+	if rowId == None:
+		dataops.closeSession(endTime)
+	elif rowId != None:
+		key = 'endTime'
+		dataops.modifySession(rowId, key, endTime)
+
 	checkSession()
 
-def calculateDuration(rowId):
-	times = dataops.returnTimes(rowId)
-	startTime = times[0]['startTime']
-	endTime = times[0]['endTime']
-	startTime = tf.stringToDatetime(startTime)
-	endTime = tf.stringToDatetime(endTime)
-	duration = str(endTime - startTime)
-	dataops.writeDuration(rowId, duration)
-
+#Prints sessions into console, all if no input is given, listed rowIds elsewise
 def listSessions(rowIds = None):
 	if rowIds == None:
 		rows = dataops.returnDatabaseContents()
@@ -141,6 +148,7 @@ def listSessions(rowIds = None):
 			outString = rowString(row[0])	#Each row returned is a list, of which the elements are the rows
 			print(outString)
 
+#Returns a string of a row for printing in listSessions
 def rowString(row):
 	rowId = 'id: ' + str(row['id'])
 	name = 'name: ' + str(row['name'])
@@ -200,27 +208,35 @@ def deleteSession(rowId = None):
 
 	checkSession()
 
+#If automatic is true, it checks if backupInterval days has passed from any startTime within the database.
+#Defaults to automatic == True, if False, backup occurs directly
 def backup(automatic = True):
-	now = dt.datetime.now()
-	date = tf.dateToString(now)
+	today = dt.date.today()
 
 	if automatic == True:
 		rows = dataops.returnAllStartTimes()
-		if len(rows) > 1:
-			sameDate = True	#Checks if any startTimes already stored are from any day other than today. Backup if it is.
+		if len(rows) >= 1:
 			for row in rows:
-				if date not in row['startTime']:
-					print(date)
-					print(row['startTime'])
-					sameDate = False
+				startTime = row['startTime']
+				startTime = tf.stringToDatetime(startTime)
+				difference = tf.dateDifference(today, startTime)
+
+				if difference.days >= backupInterval:
+					runBackupOperations()
 					break
 
-			if sameDate == False:
-				runBackupOperations()
 	elif automatic == False:
 		runBackupOperations()
 
+#Generates a path and file name for runBackupOperations
+def generateBackupPath(backupName):
+	now = dt.datetime.now()
+	pathSuffix = tf.datetimeToString(now)
+	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
 
+	return backupPath
+
+#Runs functions to back up archiveDatabase, archive contents of mainDatabase, then backup it too
 def runBackupOperations():
 	backupMainPath = generateBackupPath('Main')
 	backupArchivePath = generateBackupPath('Archive')
@@ -230,11 +246,5 @@ def runBackupOperations():
 	dataops.deleteAllMain()
 	dataops.vacuumMain()
 
-def generateBackupPath(backupName):
-	now = dt.datetime.now()
-	pathSuffix = tf.datetimeToString(now)
-	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
-
-	return backupPath
-
+#Starts the looping
 checkSession()

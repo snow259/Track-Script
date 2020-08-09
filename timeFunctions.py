@@ -44,3 +44,13 @@ def dateToString(dateTime):
 	dateString = dt.datetime.strftime(dateTime, '%Y-%m-%d')
 
 	return dateString
+
+def dateDifference(date1, dateTime):
+	year = dateTime.year
+	month = dateTime.month
+	date = dateTime.day
+	date2 = dt.date(year, month, date)
+
+	difference = date1 - date2
+
+	return difference

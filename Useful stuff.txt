@@ -1,2 +1,5 @@
 Steps to make python work with REPL in an interactable and reusable tab
 https://stackoverflow.com/a/48410223
+
+To create a .gitignore file via windows explorer:
+Create file named '.gitignore.'
