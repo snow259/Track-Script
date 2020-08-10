@@ -17,37 +17,32 @@ backupInterval = 5	#Value is in days
 #Checks database for open session of game, attempts repair if more than one open session is discovered
 def checkSession():
 	rows = dataops.checkOpenSessions()
-	if len(rows) == 0:
-		checkDuration()
-		backup()
-		inputStart()
 
-	if len(rows) == 1:
-		row = rows[0]
-		rowId = row['id']
-		game = row['name']
-		startTime = row['startTime']
-		print('Open session:\n' + str(game) + ' ' + str(startTime))
+	return rows
 
-		inputEnd(rowId)
+def printOpenSession(row, repair = False):
+	rowId = row['id']
+	game = row['name']
+	startTime = row['startTime']
 
-	if len(rows) > 1:
-		print('Multiple open sessions found:')
-		for row in rows:
-			rowId = row['id']
-			game = row['name']
-			startTime = row['startTime']
-			outString = str(rowId) + ' ' + str(game) + ' ' + str(startTime)
-			print(outString)
+	if repair == False:
+		outString = 'Open session:\n' + str(game) + ' ' + str(startTime)
+	elif repair == True:
+		outString = str(rowId) + ' ' + str(game) + ' ' + str(startTime)
 
-		repairOption = ''
-		while repairOption != 'close' and repairOption != 'delete':
-			repairOption = input('Repair options: close, delete\n')
+	print(outString)
 
-		if repairOption == 'close':
-			rowId = input('Enter id of session to close:\n')
-		elif repairOption == 'delete':
-			deleteSession()
+
+def multipleSessionRepairChoice(rows):
+	print('Multiple open sessions found:')
+	for row in rows:
+		printOpenSession(row, repair = True)
+
+	repairOption = ''
+	while repairOption != 'close' and repairOption != 'delete':
+		repairOption = input('Repair options: close, delete\n')
+
+	return repairOption
 
 def checkDuration():
 	rows = dataops.checkDurations()
@@ -66,29 +61,16 @@ def calculateDuration(rowId):
 	dataops.writeDuration(rowId, duration)
 
 #Takes input from user, reads current time
-def inputStart():
+def userInput():
 	inputString = input('Enter game: ')
 	dateAndTimeRaw = dt.datetime.now()
 	gameTime = tf.roundTime(dateAndTimeRaw)
 	gameTime = tf.removeSeconds(gameTime)
 
-	if inputString == 'edit':
-		listSessions()
-		editSession()
-	elif inputString == 'delete':
-		listSessions()
-		deleteSession()
-	elif inputString == 'list':
-		listSessions()
-	elif inputString == 'backup':
-		backup(automatic = False)
-	elif inputString == 'exit':
-		pass
-	else:
-		dataops.writeSession(None, inputString, gameTime, None, None)
+	return inputString, gameTime
 
-	if inputString != 'exit':
-		checkSession()
+def writeStart(inputString, gameTime):
+	dataops.writeSession(None, inputString, gameTime, None, None)
 
 def inputEnd(rowId):
 	choice = ''
@@ -99,7 +81,6 @@ def inputEnd(rowId):
 
 	if choice == 'close':
 		dataops.closeSession(endTime)
-		checkSession()
 	elif choice == 'delete':
 		deleteSession(rowId)
 	elif choice == 'input':
@@ -126,8 +107,6 @@ def userInputEndTime(rowId = None):
 	elif rowId != None:
 		key = 'endTime'
 		dataops.modifySession(rowId, key, endTime)
-
-	checkSession()
 
 #Prints sessions into console, all if no input is given, listed rowIds elsewise
 def listSessions(rowIds = None):
