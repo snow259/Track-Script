@@ -1,9 +1,11 @@
 import track
 
+backupInterval = 5	#Value is in days
+
 #If openSessions == 0, compute durations if missing, backup if enough days has passed, then take input
 def noOpenSessions():
 	track.checkDuration()
-	track.backup()
+	track.backup(backupInterval)
 	inputString, gameTime = track.userInput()
 
 	if inputString == 'edit':
@@ -12,10 +14,11 @@ def noOpenSessions():
 	elif inputString == 'delete':
 		track.listSessions()
 		track.deleteSession()
+		track.listSessions()
 	elif inputString == 'list':
 		track.listSessions()
 	elif inputString == 'backup':
-		track.backup(automatic = False)
+		track.runBackupOperations()
 	elif inputString == 'exit':
 		loop[0] = False
 	else:
@@ -28,7 +31,7 @@ def oneOpenSession(rows):
 	track.printOpenSession(row)
 	track.inputEnd(rowId)
 	track.checkDuration()
-	track.listSessions([rowId])
+	track.listSpecificSessions([rowId])
 
 #If openSessions > 1, take input for repair choice, then repair
 def manyOpenSessions(rows):
@@ -41,7 +44,8 @@ def manyOpenSessions(rows):
 		deleteSession()
 
 if __name__ == '__main__':
-	loop = [True]
+	loop = [True]	#Editable from within functions
+	track.listSessions()
 	while loop[0] == True:
 		rows = track.checkSession()
 		openSessions = len(rows)

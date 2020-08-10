@@ -12,9 +12,8 @@ fileDirectory = os.path.dirname(filePath)
 dataDirectory = fileDirectory + '\\Data'
 backupDirectory = fileDirectory + '\\Backup'
 databasePath = dataDirectory + '\\mainDatabase.db'
-backupInterval = 5	#Value is in days
 
-#Checks database for open session of game, attempts repair if more than one open session is discovered
+#Checks database for open sessions
 def checkSession():
 	rows = dataops.checkOpenSessions()
 
@@ -109,20 +108,23 @@ def userInputEndTime(rowId = None):
 		dataops.modifySession(rowId, key, endTime)
 
 #Prints sessions into console, all if no input is given, listed rowIds elsewise
-def listSessions(rowIds = None):
-	if rowIds == None:
-		rows = dataops.returnDatabaseContents()
-		if len(rows) == 0:
-			print('No sessions found in database')
-		if len(rows) > 0:
-			for row in rows:
-				outString = rowString(row)
-				print(outString)
-	else:
-		rows = []
-		for rowId in rowIds:
-			rows.append(dataops.returnRow(rowId))
+def listSessions():
+	rows = dataops.returnDatabaseContents()
+	if len(rows) == 0:
+		print('No sessions found in database')
+	if len(rows) > 0:
+		for row in rows:
+			outString = rowString(row)
+			print(outString)
 
+def listSpecificSessions(rowIds):
+	rows = []
+	for rowId in rowIds:
+		rows.append(dataops.returnRow(rowId))
+
+	if len(rows[0]) == 0:
+		listSessions()
+	else:
 		for row in rows:
 			outString = rowString(row[0])	#Each row returned is a list, of which the elements are the rows
 			print(outString)
@@ -143,10 +145,24 @@ def rowString(row):
 
 #Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
 def editSession():
-	rowId = input('Enter id of session to be modified: ')
+	rowId = ''
+	validRowIdType = False
+	while validRowIdType == False:
+		rowId = input('Enter id of session to be modified: ')
+
+		if rowId == 'cancel':
+			break
+
+		try:
+			_ = int(rowId)
+		except Exception:
+			pass
+		else:
+			validRowIdType = True
+
 	#If not cancel, proceed with rest of function
 	if rowId != 'cancel':
-		listSessions(rowId)
+		listSpecificSessions(rowId)
 		validKey = False
 		keys = ['name', 'startTime', 'endTime', 'cancel']
 		while validKey == False:
@@ -162,13 +178,14 @@ def editSession():
 				value = tf.roundTime(value)
 				value = tf.removeSeconds(value)
 			
+			if key != 'cancel':
 				dataops.modifySession(rowId, key, value)
 
 			if key == 'startTime' or key == 'endTime':
 				calculateDuration(rowId)
 
 			print('Edited session now is:')
-			listSessions(rowId)
+			listSpecificSessions(rowId)
 
 #If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId = None):
@@ -177,7 +194,7 @@ def deleteSession(rowId = None):
 		if rowIdRaw != 'cancel':
 			rowIds = rowIdRaw.split()
 			print('The following sessions will be deleted: ')
-			listSessions(rowIds)
+			listSpecificSessions(rowIds)
 			proceed = input('Proceed? (y/n)')
 			if proceed == 'y':
 				for rowId in rowIds:
@@ -187,25 +204,20 @@ def deleteSession(rowId = None):
 
 	checkSession()
 
-#If automatic is true, it checks if backupInterval days has passed from any startTime within the database.
-#Defaults to automatic == True, if False, backup occurs directly
-def backup(automatic = True):
+#Checks if backupInterval days has passed from any startTime within the database.
+def backup(backupInterval):
 	today = dt.date.today()
 
-	if automatic == True:
-		rows = dataops.returnAllStartTimes()
-		if len(rows) >= 1:
-			for row in rows:
-				startTime = row['startTime']
-				startTime = tf.stringToDatetime(startTime)
-				difference = tf.dateDifference(today, startTime)
+	rows = dataops.returnAllStartTimes()
+	if len(rows) >= 1:
+		for row in rows:
+			startTime = row['startTime']
+			startTime = tf.stringToDatetime(startTime)
+			difference = tf.dateDifference(today, startTime)
 
-				if difference.days >= backupInterval:
-					runBackupOperations()
-					break
-
-	elif automatic == False:
-		runBackupOperations()
+			if difference.days >= backupInterval:
+				runBackupOperations()
+				break
 
 #Generates a path and file name for runBackupOperations
 def generateBackupPath(backupName):
@@ -224,6 +236,3 @@ def runBackupOperations():
 	storeops.backupMain(backupMainPath)
 	dataops.deleteAllMain()
 	dataops.vacuumMain()
-
-#Starts the looping
-checkSession()
