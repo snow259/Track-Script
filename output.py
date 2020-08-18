@@ -1,5 +1,8 @@
 from itertools import count
 
+#Tab length 4 is used in editors, 8 appears to be used in console
+tabLength = 8
+
 def printOutput(rows):
 	unpacked = unpack(rows)
 	maxLengths = valueMaxLengths(unpacked)
@@ -54,12 +57,12 @@ def makeString(stringElements, maxLengths):
 	for key in stringElements:
 		element = str(stringElements[key])
 		elementLength = len(element)
-		elementTabLength = -(-elementLength // 4)	#Upsidedown floor division becomes ceiling division
-		elementTabLengthRemainder = elementLength % 4
+		elementTabLength = -(-elementLength // tabLength)	#Upsidedown floor division becomes ceiling division
+		elementTabLengthRemainder = elementLength % tabLength
 
 		maxLength = maxLengths[key]
-		maxTabLength = -(-maxLength // 4)
-		maxTabLengthRemainder = maxLength % 4
+		maxTabLength = -(-maxLength // tabLength)
+		maxTabLengthRemainder = maxLength % tabLength
 
 		outString = outString + str(element) + tab
 		
@@ -70,8 +73,8 @@ def makeString(stringElements, maxLengths):
 		if elementTabLengthRemainder == 0:
 			tabCorrection -= 1
 		#If remainer == 0, the tab added after the element with max length will form an entirely new tab space
-		#If remainder == 3, the gap between the two columns is too short, like with startTime and endTime
-		if maxTabLengthRemainder == 0 or maxTabLengthRemainder == 3:
+		#If remainder == 3, the gap between the two columns is too short, like with startTime and endTime, not needed with tab length 8 like in the console
+		if maxTabLengthRemainder == 0:
 			tabCorrection += 1
 		#Checks if current element is the one with max length and zeroes out the additional tabs after
 		if maxTabLength == elementTabLength:
