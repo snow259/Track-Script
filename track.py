@@ -117,6 +117,8 @@ def listSessions():
 			outString = rowString(row)
 			print(outString)
 
+#Input here must be a list even if the number of rowId is 1
+#If input is a string, it will iterate through the string and split up a single number into multiple digits
 def listSpecificSessions(rowIds):
 	rows = []
 	for rowId in rowIds:
@@ -162,7 +164,7 @@ def editSession():
 
 	#If not cancel, proceed with rest of function
 	if rowId != 'cancel':
-		listSpecificSessions(rowId)
+		listSpecificSessions([rowId])
 		validKey = False
 		keys = ['name', 'startTime', 'endTime', 'cancel']
 		while validKey == False:
@@ -185,7 +187,7 @@ def editSession():
 				calculateDuration(rowId)
 
 			print('Edited session now is:')
-			listSpecificSessions(rowId)
+			listSpecificSessions([rowId])
 
 #If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId = None):

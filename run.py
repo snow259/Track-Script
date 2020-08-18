@@ -19,6 +19,7 @@ def noOpenSessions():
 		track.listSessions()
 	elif inputString == 'backup':
 		track.runBackupOperations()
+		track.listSessions()
 	elif inputString == 'exit':
 		loop[0] = False
 	else:
