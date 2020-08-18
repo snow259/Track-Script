@@ -4,6 +4,7 @@ import calendar
 import databaseOperations as dataops
 import storageOperations as storeops
 import timeFunctions as tf
+import output as op
 
 #All paths used
 #filePath is path to this file, its directory is fileDirectory
@@ -113,23 +114,28 @@ def listSessions():
 	if len(rows) == 0:
 		print('No sessions found in database')
 	if len(rows) > 0:
-		for row in rows:
-			outString = rowString(row)
-			print(outString)
+		op.printOutput(rows)
 
 #Input here must be a list even if the number of rowId is 1
 #If input is a string, it will iterate through the string and split up a single number into multiple digits
 def listSpecificSessions(rowIds):
-	rows = []
+	rowsRaw = []
 	for rowId in rowIds:
-		rows.append(dataops.returnRow(rowId))
+		rowsRaw.append(dataops.returnRow(rowId))
+
+	#Each query to the database returns a list of sqlite3.Row objects. Here, a query is one rowId
+	#Thus, one list for each sqlite3.Row object is returned
+	#Furthermore, unlike in listSessions, each list that is returned is appended to another list
+	#Whereas the list rows in listSessions is the list returned by the query
+	#The following changes the structure of rowsRaw to match that of rows in listSessions
+	rows = []
+	for element in rowsRaw:
+		rows.append(element[0])
 
 	if len(rows[0]) == 0:
 		listSessions()
 	else:
-		for row in rows:
-			outString = rowString(row[0])	#Each row returned is a list, of which the elements are the rows
-			print(outString)
+		op.printOutput(rows)
 
 #Returns a string of a row for printing in listSessions
 def rowString(row):
@@ -141,7 +147,7 @@ def rowString(row):
 	rowString = ''
 	listOfElements = [rowId, name, startTime, endTime, duration]
 	for element in listOfElements:
-		rowString = rowString + element + '	'
+		rowString = rowString + element + '	' #A tab is added here, not space
 
 	return rowString
 
