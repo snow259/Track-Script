@@ -3,3 +3,6 @@ https://stackoverflow.com/a/48410223
 
 To create a .gitignore file via windows explorer:
 Create file named '.gitignore.'
+
+Ceiling division
+https://stackoverflow.com/questions/14822184/is-there-a-ceiling-equivalent-of-operator-in-python/17511341#17511341

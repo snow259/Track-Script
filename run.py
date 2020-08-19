@@ -42,7 +42,7 @@ def manyOpenSessions(rows):
 		rowId = input('Enter id of session to close:\n')
 		track.userInputEndTime(rowId)
 	elif repairOption == 'delete':
-		deleteSession()
+		track.deleteSession()
 
 if __name__ == '__main__':
 	loop = [True]	#Editable from within functions

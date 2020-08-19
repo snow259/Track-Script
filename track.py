@@ -130,7 +130,11 @@ def listSpecificSessions(rowIds):
 	#The following changes the structure of rowsRaw to match that of rows in listSessions
 	rows = []
 	for element in rowsRaw:
-		rows.append(element[0])
+		#These if checks are to prevent a crash when deleting an entry
+		if len(rowsRaw[0]) == 0:
+			rows.append(element)
+		else:
+			rows.append(element[0])
 
 	if len(rows[0]) == 0:
 		listSessions()
