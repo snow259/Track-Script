@@ -1,11 +1,33 @@
 import track
 
 backupInterval = 5	#Value is in days
+userDeclinedBackup = [False]	#Editable within function
+#Checks if backup is required, then asks user if backup can be performed
+def backup():
+	#Checks if user wants to perform backup before performing it. Does not ask user to backup until reopening script if declined
+	mustBackup = track.backup(backupInterval)
+	if mustBackup == True and userDeclinedBackup[0] == False:
+		userBackupChoice = input('It has been more than ' + str(backupInterval) + ' days since last backup. Run backup? (y/n)\n')
+		if userBackupChoice == 'y':
+			runBackup()
+		else:
+			userDeclinedBackup[0] = True
 
-#If openSessions == 0, compute durations if missing, backup if enough days has passed, then take input
+#If user agrees to backup, backup is attempted
+def runBackup():
+	try:
+		track.runBackupOperations()
+	except Exception as e:
+		print('Possible issue with backup')
+		print(e)
+	else:
+		print('Backup successfully completed')
+		track.listSessions()
+
+#If openSessions == 0, compute durations if missing, then take input
 def noOpenSessions():
 	track.checkDuration()
-	track.backup(backupInterval)
+
 	inputString, gameTime = track.userInput()
 
 	if inputString == 'edit':
@@ -18,8 +40,7 @@ def noOpenSessions():
 	elif inputString == 'list':
 		track.listSessions()
 	elif inputString == 'backup':
-		track.runBackupOperations()
-		track.listSessions()
+		runBackup()
 	elif inputString == 'exit':
 		loop[0] = False
 	else:
@@ -52,6 +73,7 @@ if __name__ == '__main__':
 		openSessions = len(rows)
 		
 		if openSessions == 0:
+			backup()
 			noOpenSessions()
 		elif openSessions == 1:
 			oneOpenSession(rows)

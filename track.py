@@ -91,7 +91,7 @@ def userInputEndTime(rowId = None):
 	while inputCorrect == False:
 		userEndTime = input('Enter end time in format: YYYY-MM-DD HH:MM:SS\n')
 		userEndTime = userEndTime.strip()
-		isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)'
+		isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)\n'
 		isThisRight = input(isThisRightString)
 		if isThisRight == 'y':
 			inputCorrect = True
@@ -207,7 +207,7 @@ def deleteSession(rowId = None):
 			rowIds = rowIdRaw.split()
 			print('The following sessions will be deleted: ')
 			listSpecificSessions(rowIds)
-			proceed = input('Proceed? (y/n)')
+			proceed = input('Proceed? (y/n)\n')
 			if proceed == 'y':
 				for rowId in rowIds:
 					dataops.deleteSession(int(rowId))
@@ -219,6 +219,7 @@ def deleteSession(rowId = None):
 #Checks if backupInterval days has passed from any startTime within the database.
 def backup(backupInterval):
 	today = dt.date.today()
+	mustBackup = False
 
 	rows = dataops.returnAllStartTimes()
 	if len(rows) >= 1:
@@ -228,16 +229,10 @@ def backup(backupInterval):
 			difference = tf.dateDifference(today, startTime)
 
 			if difference.days >= backupInterval:
-				runBackupOperations()
+				mustBackup = True
 				break
 
-#Generates a path and file name for runBackupOperations
-def generateBackupPath(backupName):
-	now = dt.datetime.now()
-	pathSuffix = tf.datetimeToString(now)
-	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
-
-	return backupPath
+	return mustBackup
 
 #Runs functions to back up archiveDatabase, archive contents of mainDatabase, then backup it too
 def runBackupOperations():
@@ -248,3 +243,11 @@ def runBackupOperations():
 	storeops.backupMain(backupMainPath)
 	dataops.deleteAllMain()
 	dataops.vacuumMain()
+
+#Generates a path and file name for runBackupOperations
+def generateBackupPath(backupName):
+	now = dt.datetime.now()
+	pathSuffix = tf.datetimeToString(now)
+	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
+
+	return backupPath
