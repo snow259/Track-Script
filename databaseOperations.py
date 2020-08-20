@@ -27,79 +27,103 @@ def checkForDatabase():
 
 #Checks for an open session
 def checkOpenSessions():
-	database = sqlite3.connect(databasePath)
-	database.row_factory = sqlite3.Row
-	cursor = database.cursor()
-	try:
-		cursor.execute('SELECT id, name, startTime FROM Games WHERE endTime IS ?', (None, ))
-	except Exception as e:
-		print('Error in checkOpenSessions()')
-		print(e)
-	else:
-		rows = cursor.fetchall()
-		return rows
-	finally:
-		database.close()
+	checkOpenSessionsString = 'SELECT id, name, startTime FROM Games WHERE endTime IS ?'
+	argument = (None, )
+	rows = executeRead(databasePath, checkOpenSessionsString, argument, 'checkOpenSessions()')
+
+	return rows
 
 #Finds any sessions with both times entered and duration not computed
 def checkDurations():
 	checkDurationString = 'SELECT id, startTime, endTime FROM Games WHERE startTime IS NOT NULL AND endTime IS NOT NULL AND duration IS NULL'
-	database = sqlite3.connect(databasePath)
-	database.row_factory = sqlite3.Row
-	cursor = database.cursor()
-	try:
-		cursor.execute(checkDurationString)
-	except Exception as e:
-		print('Error in checkDurations()')
-		print(e)
-	else:
-		rows = cursor.fetchall()
-		return rows
-	finally:
-		database.close()
+	argument = None
+	rows = executeRead(databasePath, checkDurationString, argument, 'checkDurations()')
+
+	return rows
 
 #Returns start and end times of specified session
 def returnTimes(rowId):
 	returnTimesString = 'SELECT startTime, endTime FROM Games WHERE id IS ?'
-	database = sqlite3.connect(databasePath)
-	database.row_factory = sqlite3.Row
-	cursor = database.cursor()
-	try:
-		cursor.execute(returnTimesString, (rowId, ))
-	except Exception as e:
-		print('Error in returnTimes()')
-		print(e)
-	else:
-		times = cursor.fetchall()
-		return times
-	finally:
-		database.close()
+	argument = (rowId, )
+	times = executeRead(databasePath, returnTimesString, argument, 'returnTimes()')
+
+	return times
 
 def returnAllStartTimes():
 	returnAllStartTimesString = 'SELECT startTime FROM Games'
-	database = sqlite3.connect(databasePath)
-	database.row_factory = sqlite3.Row
-	cursor = database.cursor()
-	try:
-		cursor.execute(returnAllStartTimesString)
-	except Exception as e:
-		print('Error in returnAllStartTimes()')
-		print(e)
-	else:
-		startTimes = cursor.fetchall()
-		return startTimes
-	finally:
-		database.close()
+	argument = None
+	startTimes = executeRead(databasePath, returnAllStartTimesString, argument, 'returnAllStartTimes()')
 
+	return startTimes
+	
 #Returns all rows
 def returnDatabaseContents():
+	returnDatabaseContentsString = 'SELECT * FROM Games'
+	argument = None
+	rows = executeRead(databasePath, returnDatabaseContentsString, argument, 'returnDatabaseContents()')
+
+	return rows
+
+#Returns single, specified row
+def returnRow(rowId):
+	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
+	argument = (rowId, )
+	row = executeRead(databasePath, returnRowString, argument, 'returnRow()')
+
+	return row
+
+#Writes session to database
+def writeSession(rowId, name, startTime, endTime, duration):
+	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
+	argument = (rowId, name, startTime, endTime, duration)
+	executeWrite(databasePath, insertString, argument, 'writeSession()')
+
+#Closes session in database
+def closeSession(endTime):
+	closeString = 'UPDATE Games SET endTime = ? WHERE endTime IS NULL'
+	argument = (endTime, )
+	executeWrite(databasePath, closeString, argument, 'closeSession()')
+
+#Deletes specified sessions
+def deleteSession(rowId):
+	deleteString = 'DELETE FROM Games WHERE id IS ?'
+	argument = (rowId, )
+	executeWrite(databasePath, deleteString, argument, 'deleteSession()')
+
+#Writes the duration of a session
+def writeDuration(rowId, duration):
+	writeDurationString = 'UPDATE Games SET duration = ? WHERE id IS ?'
+	argument = (duration, rowId)
+	executeWrite(databasePath, writeDurationString, argument, 'writeDuration()')
+
+#Allows editing of the name, start, and end times of a session. Duration is recomputed after, in track.py
+def modifySession(rowId, key, value):
+	modifySessionString = 'UPDATE Games SET ' + key + ' = ? WHERE id IS ?'
+	argument = (value, int(rowId))
+	executeWrite(databasePath, modifySessionString, argument, 'modifySession()')
+
+def deleteAllMain():
+	deleteAllMainString = 'DELETE FROM Games'
+	argument = None
+	executeWrite(databasePath, deleteAllMainString, argument, 'deleteAllMain()')
+
+def vacuumMain():
+	vacuumMainString = 'VACUUM'
+	argument = None
+	executeWrite(databasePath, vacuumMainString, argument, 'vacuumMain()')
+
+def executeRead(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
 	database.row_factory = sqlite3.Row
 	cursor = database.cursor()
+
 	try:
-		cursor.execute('SELECT * FROM Games')
+		if argument == None:
+			cursor.execute(commandString)
+		else:
+			cursor.execute(commandString, argument)
 	except Exception as e:
-		print('Error in returnDatabaseContents()')
+		print('Error in ' + functionName)
 		print(e)
 	else:
 		rows = cursor.fetchall()
@@ -107,132 +131,23 @@ def returnDatabaseContents():
 	finally:
 		database.close()
 
-#Returns single, specified row
-def returnRow(rowId):
-	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
-	database = sqlite3.connect(databasePath)
-	database.row_factory = sqlite3.Row
-	cursor = database.cursor()
-	try:
-		cursor.execute(returnRowString, (rowId, ))
-	except Exception as e:
-		print('Error in returnRow()')
-		print(e)
-	else:
-		row = cursor.fetchall()
-		return row
-	finally:
-		database.close()
+	return rows
 
-#Writes session to database
-def writeSession(rowId, name, startTime, endTime, duration):
-	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
+def executeWrite(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
 	try:
-		cursor.execute(insertString, (rowId, name, startTime, endTime, duration))
+		if argument == None:
+			cursor.execute(commandString)
+		else:
+			cursor.execute(commandString, argument)
 	except Exception as e:
-		print('Error in writeSession()')
+		print('Error in ' + str(functionName))
 		print(e)
 		print('Rolling back!')
 		database.rollback()
 	else:
 		database.commit()
-	finally:
-		database.close()
-
-#Closes session in database
-def closeSession(endTime):
-	closeString = 'UPDATE Games SET endTime = ? WHERE endTime IS NULL'
-	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
-	try:
-		cursor.execute(closeString, (endTime, ))
-	except Exception as e:
-		print('Error in closeSession()')
-		print(e)
-		print('Rolling back!')
-		database.rollback()
-	else:
-		database.commit()
-	finally:
-		database.close()
-
-#Deletes specified sessions
-def deleteSession(rowId):
-	deleteString = 'DELETE FROM Games WHERE id IS ?'
-	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
-	try:
-		cursor.execute(deleteString, (rowId, ))
-	except Exception as e:
-		print('Error in deleteSession()')
-		print(e)
-		print('Rolling back!')
-		database.rollback()
-	else:
-		database.commit()
-	finally:
-		database.close()
-
-#Writes the duration of a session
-def writeDuration(rowId, duration):
-	writeDurationString = 'UPDATE Games SET duration = ? WHERE id IS ?'
-	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
-	try:
-		cursor.execute(writeDurationString, (duration, rowId))
-	except Exception as e:
-		print('Error in writeDuration()')
-		print(e)
-		print('Rolling back!')
-		database.rollback()
-	else:
-		database.commit()
-	finally:
-		database.close()
-
-#Allows editing of the name, start, and end times of a session. Duration is recomputed after, in track.py
-def modifySession(rowId, key, value):
-	modifyEntryString = 'UPDATE Games SET ' + key + ' = ? WHERE id IS ?'
-	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
-	try:
-		cursor.execute(modifyEntryString, (value, int(rowId)))
-	except Exception as e:
-		print('Error in modifySession()')
-		print(e)
-		print('Rolling back!')
-		database.rollback()
-	else:
-		database.commit()
-	finally:
-		database.close()
-
-def deleteAllMain():
-	deleteAllMainString = 'DELETE FROM Games'
-	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
-	try:
-		cursor.execute(deleteAllMainString)
-	except Exception as e:
-		print('Error in deleteAllMain()')
-		print(e)
-		print('Rolling back!')
-		database.rollback()
-	else:
-		database.commit()
-	finally:
-		database.close()
-
-def vacuumMain():
-	vacuumMainString = 'VACUUM'
-	database = sqlite3.connect(databasePath)
-	try:
-		database.execute(vacuumMainString)
-	except Exception as e:
-		print('Error in vacuumMain()')
-		print(e)
 	finally:
 		database.close()
 
