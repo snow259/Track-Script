@@ -157,54 +157,39 @@ def rowString(row):
 
 #Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
 def editSession():
-	rowId = ''
-	validRowIdType = False
-	while validRowIdType == False:
-		rowId = input('Enter id of session to be modified: ')
-
-		if rowId == 'cancel':
-			break
-
-		try:
-			_ = int(rowId)
-		except Exception:
-			pass
-		else:
-			validRowIdType = True
-
+	rowId = rowIdInput('Enter id of session to be modified: ', multipleRowIds = False)[0]
 	#If not cancel, proceed with rest of function
-	if rowId != 'cancel':
+	if rowId != '/cancel':
 		listSpecificSessions([rowId])
 		validKey = False
-		keys = ['name', 'startTime', 'endTime', 'cancel']
+		keys = ['name', 'startTime', 'endTime', '/cancel']
 		while validKey == False:
 			key = input('Enter key (name, startTime, endTime): ')
 			if keys.count(key) == 1:
 				validKey = True
 
 		#If key not cancel, proceed with accepting new value
-		if key != 'cancel':
+		if key != '/cancel':
 			value = input('Enter new value: ')
 
-			if key == 'startTime' or key == 'endTime':
-				value = tf.roundTime(value)
-				value = tf.removeSeconds(value)
-			
-			if key != 'cancel':
+			if value != '/cancel':
+				if key == 'startTime' or key == 'endTime':
+					value = tf.roundTime(value)
+					value = tf.removeSeconds(value)
+				
 				dataops.modifySession(rowId, key, value)
 
-			if key == 'startTime' or key == 'endTime':
-				calculateDuration(rowId)
+				if key == 'startTime' or key == 'endTime':
+					calculateDuration(rowId)
 
-			print('Edited session now is:')
-			listSpecificSessions([rowId])
+				print('Edited session now is:')
+				listSpecificSessions([rowId])
 
 #If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId = None):
 	if rowId == None:
-		rowIdRaw = input('Enter ids to delete: ')
-		if rowIdRaw != 'cancel':
-			rowIds = rowIdRaw.split()
+		rowIds = rowIdInput('Ender ids to delete: ', multipleRowIds = True)
+		if '/cancel' not in rowIds:
 			print('The following sessions will be deleted: ')
 			listSpecificSessions(rowIds)
 			proceed = input('Proceed? (y/n)\n')
@@ -215,6 +200,34 @@ def deleteSession(rowId = None):
 		dataops.deleteSession(rowId)
 
 	checkSession()
+
+def rowIdInput(inputString, multipleRowIds):
+	validRowId = False
+	while validRowId == False:
+		#Takes input
+		rowIdList = input(inputString)
+		rowIdList = rowIdList.split()
+
+		if '/cancel' in rowIdList:
+			break
+		#Checks if too many rowIds are given. If not, checks if all can be int
+		validRowIdCount = True
+		validRowIdType = True
+		if len(rowIdList) > 1 and multipleRowIds == False:
+			print('Too many inputs')
+			validRowIdCount = False
+		else:
+			for rowId in rowIdList:
+				try:
+					_ = int(rowId)
+				except Exception:
+					validRowIdType = False
+
+		#If the above two checks pass, exit loop
+		if validRowIdType == True and validRowIdCount == True:
+			validRowId = True
+
+	return rowIdList
 
 #Checks if backupInterval days has passed from any startTime within the database.
 def backup(backupInterval):

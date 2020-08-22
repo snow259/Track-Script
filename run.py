@@ -30,19 +30,21 @@ def noOpenSessions():
 
 	inputString, gameTime = track.userInput()
 
-	if inputString == 'edit':
-		track.listSessions()
-		track.editSession()
-	elif inputString == 'delete':
-		track.listSessions()
-		track.deleteSession()
-		track.listSessions()
-	elif inputString == 'list':
-		track.listSessions()
-	elif inputString == 'backup':
-		runBackup()
-	elif inputString == 'exit':
-		loop[0] = False
+	if inputString.startswith('/'):
+		command = inputString.lstrip('/')
+		if command == 'edit':
+			track.listSessions()
+			track.editSession()
+		elif command == 'delete':
+			track.listSessions()
+			track.deleteSession()
+			track.listSessions()
+		elif command == 'list':
+			track.listSessions()
+		elif command == 'backup':
+			runBackup()
+		elif command == 'exit':
+			loop[0] = False
 	else:
 		track.writeStart(inputString, gameTime)
 

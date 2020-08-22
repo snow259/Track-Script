@@ -102,16 +102,19 @@ def modifySession(rowId, key, value):
 	argument = (value, int(rowId))
 	executeWrite(databasePath, modifySessionString, argument, 'modifySession()')
 
+#Deletes all sessions from database, done during backup
 def deleteAllMain():
 	deleteAllMainString = 'DELETE FROM Games'
 	argument = None
 	executeWrite(databasePath, deleteAllMainString, argument, 'deleteAllMain()')
 
+#Vacuums database into another location to serve as backup
 def vacuumMain():
 	vacuumMainString = 'VACUUM'
 	argument = None
 	executeWrite(databasePath, vacuumMainString, argument, 'vacuumMain()')
 
+#Called by all functions that read the database and return a variable
 def executeRead(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
 	database.row_factory = sqlite3.Row
@@ -133,6 +136,7 @@ def executeRead(databasePath, commandString, argument, functionName):
 
 	return rows
 
+#Called by all functions that modify the database
 def executeWrite(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
