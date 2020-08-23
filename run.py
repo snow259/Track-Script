@@ -1,4 +1,5 @@
 import track
+import dataInputAndValidity as di
 
 backupInterval = 5	#Value is in days
 userDeclinedBackup = [False]	#Editable within function
@@ -62,7 +63,7 @@ def manyOpenSessions(rows):
 	repairOption = track.multipleSessionRepairChoice(rows)
 
 	if repairOption == 'close':
-		rowId = input('Enter id of session to close:\n')
+		rowId = di.rowIdInput('Enter id of session to close\n', multipleRowIds = False)
 		track.userInputEndTime(rowId)
 	elif repairOption == 'delete':
 		track.deleteSession()

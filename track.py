@@ -4,6 +4,7 @@ import calendar
 import databaseOperations as dataops
 import storageOperations as storeops
 import timeFunctions as tf
+import dataInputAndValidity as di
 import output as op
 
 #All paths used
@@ -157,7 +158,7 @@ def rowString(row):
 
 #Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
 def editSession():
-	rowId = rowIdInput('Enter id of session to be modified: ', multipleRowIds = False)[0]
+	rowId = di.rowIdInput('Enter id of session to be modified: ', multipleRowIds = False)[0]
 	#If not cancel, proceed with rest of function
 	if rowId != '/cancel':
 		listSpecificSessions([rowId])
@@ -188,7 +189,7 @@ def editSession():
 #If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId = None):
 	if rowId == None:
-		rowIds = rowIdInput('Ender ids to delete: ', multipleRowIds = True)
+		rowIds = di.rowIdInput('Ender ids to delete: ', multipleRowIds = True)
 		if '/cancel' not in rowIds:
 			print('The following sessions will be deleted: ')
 			listSpecificSessions(rowIds)
@@ -200,34 +201,6 @@ def deleteSession(rowId = None):
 		dataops.deleteSession(rowId)
 
 	checkSession()
-
-def rowIdInput(inputString, multipleRowIds):
-	validRowId = False
-	while validRowId == False:
-		#Takes input
-		rowIdList = input(inputString)
-		rowIdList = rowIdList.split()
-
-		if '/cancel' in rowIdList:
-			break
-		#Checks if too many rowIds are given. If not, checks if all can be int
-		validRowIdCount = True
-		validRowIdType = True
-		if len(rowIdList) > 1 and multipleRowIds == False:
-			print('Too many inputs')
-			validRowIdCount = False
-		else:
-			for rowId in rowIdList:
-				try:
-					_ = int(rowId)
-				except Exception:
-					validRowIdType = False
-
-		#If the above two checks pass, exit loop
-		if validRowIdType == True and validRowIdCount == True:
-			validRowId = True
-
-	return rowIdList
 
 #Checks if backupInterval days has passed from any startTime within the database.
 def backup(backupInterval):
