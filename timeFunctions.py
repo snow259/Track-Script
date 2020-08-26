@@ -8,6 +8,21 @@ def daysInMonth(dateAndTime):
 	days = calendar.monthrange(year, month)[1]
 	return days
 
+#Rounds and removes seconds for datetime object
+def processDateTime(dateTime):
+	dateTime = roundTime(dateTime)
+	dateTime = removeSeconds(dateTime)
+
+	return dateTime
+
+#Does the same as above but on a string input
+def processDateTimeString(dateTimeString):
+	dateTime = stringToDatetime(dateTimeString)
+	dateTime = processDateTime(dateTime)
+	print(dateTime)
+
+	return dateTime
+
 #Rounds time to nearest minute, second is not used elsewhere in code
 def roundTime(dateAndTimeRaw):
 	inputType = str(type(dateAndTimeRaw))
@@ -34,9 +49,11 @@ def stringToDatetime(dateTimeString):
 
 	return dateTime
 
-def datetimeToString(dateTime, backUp = True):
-	if backUp == True:
+def datetimeToString(dateTime, backup = True):
+	if backup == True:
 		dateTimeString = dt.datetime.strftime(dateTime, '%Y%m%d%H%M%S')
+	else:
+		dateTimeString = dt.datetime.strftime(dateTime, '%Y-%m-%d %H:%M:%S')
 
 	return dateTimeString
 
