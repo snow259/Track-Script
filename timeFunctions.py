@@ -19,7 +19,6 @@ def processDateTime(dateTime):
 def processDateTimeString(dateTimeString):
 	dateTime = stringToDatetime(dateTimeString)
 	dateTime = processDateTime(dateTime)
-	print(dateTime)
 
 	return dateTime
 

@@ -65,8 +65,7 @@ def calculateDuration(rowId):
 def userInput():
 	inputString = input('Enter game: ')
 	dateAndTimeRaw = dt.datetime.now()
-	gameTime = tf.roundTime(dateAndTimeRaw)
-	gameTime = tf.removeSeconds(gameTime)
+	gameTime = tf.processDateTime(dateAndTimeRaw)
 
 	return inputString, gameTime
 
@@ -74,9 +73,9 @@ def writeStart(inputString, gameTime):
 	dataops.writeSession(None, inputString, gameTime, None, None)
 
 def inputEnd(rowId):
-	choice = ''
-	while choice != 'close' and  choice != 'delete' and choice != 'input':
-		choice = input('Options: close, delete, input\n')
+	choiceList = ['close', 'delete', 'input']
+	choiceString = None
+	choice = di.keyInput(choiceList, choiceString)
 	endTime = tf.roundTime(dt.datetime.now())
 	endTime = tf.removeSeconds(endTime)
 
@@ -90,24 +89,25 @@ def inputEnd(rowId):
 def userInputEndTime(rowId = None):
 	inputCorrect = False
 	while inputCorrect == False:
-		userEndTime = input('Enter end time in format: YYYY-MM-DD HH:MM:SS\n')
-		userEndTime = userEndTime.strip()
-		isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)\n'
-		isThisRight = input(isThisRightString)
-		if isThisRight == 'y':
-			inputCorrect = True
-
-	#Processes input time for insertion
-	userEndTime = tf.stringToDatetime(userEndTime)
-	userEndTime = tf.roundTime(userEndTime)
-	endTime = tf.removeSeconds(userEndTime)
+		userEndTime = di.timeInput(None, 'Enter end time in format: YYYY-MM-DD HH:MM:SS\n', 'endTime')
+		# userEndTime = input('Enter end time in format: YYYY-MM-DD HH:MM:SS\n')
+		# userEndTime = userEndTime.strip()
+		if userEndTime != '/cancel':
+			isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)\n'
+			isThisRight = input(isThisRightString)
+			if isThisRight == 'y':
+				inputCorrect = True
+		else:
+			break
 
 	#rowId defaults to None, and session is closed via closeSession as normal. If rowId is provided, modifySession is used instead to edit endTime
-	if rowId == None:
-		dataops.closeSession(endTime)
-	elif rowId != None:
-		key = 'endTime'
-		dataops.modifySession(rowId, key, endTime)
+	if userEndTime != '/cancel':
+		endTime = userEndTime
+		if rowId == None:
+			dataops.closeSession(endTime)
+		elif rowId != None:
+			key = 'endTime'
+			dataops.modifySession(rowId, key, endTime)
 
 #Prints sessions into console, all if no input is given, listed rowIds elsewise
 def listSessions():
@@ -142,42 +142,27 @@ def listSpecificSessions(rowIds):
 	else:
 		op.printOutput(rows)
 
-#Returns a string of a row for printing in listSessions
-def rowString(row):
-	rowId = 'id: ' + str(row['id'])
-	name = 'name: ' + str(row['name'])
-	startTime = 'start: ' + str(row['startTime'])
-	endTime = 'end: ' + str(row['endTime'])
-	duration = 'duration: ' + str(row['duration'])
-	rowString = ''
-	listOfElements = [rowId, name, startTime, endTime, duration]
-	for element in listOfElements:
-		rowString = rowString + element + '	' #A tab is added here, not space
-
-	return rowString
-
 #Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
 def editSession():
 	rowId = di.rowIdInput('Enter id of session to be modified: ', multipleRowIds = False)[0]
 	#If not cancel, proceed with rest of function
 	if rowId != '/cancel':
 		listSpecificSessions([rowId])
-		validKey = False
-		keys = ['name', 'startTime', 'endTime', '/cancel']
-		while validKey == False:
-			key = input('Enter key (name, startTime, endTime): ')
-			if keys.count(key) == 1:
-				validKey = True
+		keyList = ['name', 'startTime', 'endTime']
+		key = di.keyInput(keyList, inputString = None)
 
 		#If key not cancel, proceed with accepting new value
 		if key != '/cancel':
-			value = input('Enter new value: ')
+			if key == 'name':
+				value = input('Enter new value: ')
 
-			if value != '/cancel':
-				if key == 'startTime' or key == 'endTime':
-					value = tf.roundTime(value)
-					value = tf.removeSeconds(value)
-				
+			if key == 'startTime':
+				value = di.timeInput(rowId, 'Enter new startTime: ', 'startTime')
+
+			if key == 'endTime':
+				value = di.timeInput(rowId, 'Enter new endTime: ', 'endTime')
+
+			if value != '/cancel':				
 				dataops.modifySession(rowId, key, value)
 
 				if key == 'startTime' or key == 'endTime':

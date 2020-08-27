@@ -74,6 +74,28 @@ def checkRowIdExist(rowIdList):
 
 	return rowIdExist
 
+def keyInput(keyList, inputString):
+	if inputString == None:
+		inputString = generateKeyInputString(keyList)
+
+	keyList.append('/cancel')
+	validKey = False
+	while validKey == False:
+		key = input(inputString)
+		if keyList.count(key) == 1:
+			validKey = True
+
+	return key
+
+def generateKeyInputString(keyList):
+	inputString = 'Enter key ('
+	for key in keyList:
+		inputString = inputString + str(key) + ' '
+	inputString = inputString.rstrip()
+	inputString = inputString + '): '
+
+	return inputString
+
 def nameInput():
 	pass
 
@@ -114,7 +136,7 @@ def checkDateTimeFormat(dateTimeString):
 
 def checkTimeDifference(rowId, dateTime, startOrEnd):
 	validTimeDifference = True
-	times = dataops.returnTimes(rowId)
+	times = dataops.returnTimes(rowId)[0]
 
 	if startOrEnd == 'startTime':
 		startTime = dateTime
