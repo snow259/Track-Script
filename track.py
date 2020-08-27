@@ -33,7 +33,6 @@ def printOpenSession(row, repair = False):
 
 	print(outString)
 
-
 def multipleSessionRepairChoice(rows):
 	print('Multiple open sessions found:')
 	for row in rows:

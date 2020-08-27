@@ -1,6 +1,24 @@
 import databaseOperations as dataops
 import timeFunctions as tf
 
+#Takes inputs starting with '/', and splits it into command and args. Arguments must be comma seperated
+def processCommand(inputString):
+	inputString = inputString.lstrip('/')
+	inputstring = inputString.strip()
+
+	command, *arguments = inputString.split(' ', 1)
+	if len(arguments) == 0:
+		arguments = None
+	elif len(arguments) != 0:
+		arguments = arguments[0]
+		arguments = arguments.split(',')
+
+		for i in range(len(arguments)):
+			arguments[i] = arguments[i].strip()
+
+	return command, arguments
+
+#Takes user input for rowId, checks if it is int, and exists in db, then returns it
 def rowIdInput(inputString, multipleRowIds):
 	validRowId = False
 	while validRowId == False:
@@ -74,6 +92,7 @@ def checkRowIdExist(rowIdList):
 
 	return rowIdExist
 
+#Takes user input for key, checks if it exists in provided list, then returns it
 def keyInput(keyList, inputString):
 	if inputString == None:
 		inputString = generateKeyInputString(keyList)
@@ -87,6 +106,7 @@ def keyInput(keyList, inputString):
 
 	return key
 
+#Generates string for use in input() if no string is provided
 def generateKeyInputString(keyList):
 	inputString = 'Enter key ('
 	for key in keyList:
@@ -99,6 +119,7 @@ def generateKeyInputString(keyList):
 def nameInput():
 	pass
 
+#Takes user input for any time, checks if it is of the right format, checks if resulting duration > 0, then returns it
 def timeInput(rowId, inputString, startOrEnd):
 	validDateTime = False
 	while validDateTime == False:
@@ -123,6 +144,7 @@ def timeInput(rowId, inputString, startOrEnd):
 
 	return dateTimeString
 
+#Checks format of input by attempting to run strptime
 def checkDateTimeFormat(dateTimeString):
 	validDateTimeFormat = True
 	try:
@@ -134,6 +156,7 @@ def checkDateTimeFormat(dateTimeString):
 
 	return validDateTimeFormat
 
+#Checks if datetime.timedelta.days < 0
 def checkTimeDifference(rowId, dateTime, startOrEnd):
 	validTimeDifference = True
 	times = dataops.returnTimes(rowId)[0]

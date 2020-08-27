@@ -1,5 +1,6 @@
 import track
 import dataInputAndValidity as di
+import randomChoice as rc
 
 backupInterval = 5	#Value is in days
 userDeclinedBackup = [False]	#Editable within function
@@ -32,7 +33,7 @@ def noOpenSessions():
 	inputString, gameTime = track.userInput()
 
 	if inputString.startswith('/'):
-		command = inputString.lstrip('/')
+		command, argument = di.processCommand(inputString)
 		if command == 'edit':
 			track.listSessions()
 			track.editSession()
@@ -44,6 +45,8 @@ def noOpenSessions():
 			track.listSessions()
 		elif command == 'backup':
 			runBackup()
+		elif command == 'random':
+			rc.randomGame(argument)
 		elif command == 'exit':
 			loop[0] = False
 	else:
