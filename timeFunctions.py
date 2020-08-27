@@ -70,3 +70,4 @@ def dateDifference(date1, dateTime):
 	difference = date1 - date2
 
 	return difference
+	

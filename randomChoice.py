@@ -1,4 +1,3 @@
-#TODO functions to randomly choose a game either from userinput or from recently played
 import random
 
 def randomGame(argument):
@@ -22,3 +21,4 @@ def randomGame(argument):
 #Pick game randomly from a game played in last five days
 def randomPastGame(days):
 	print(days)
+	

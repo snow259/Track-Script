@@ -221,3 +221,4 @@ def generateBackupPath(backupName):
 	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
 
 	return backupPath
+	

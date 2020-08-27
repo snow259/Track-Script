@@ -179,3 +179,4 @@ def checkTimeDifference(rowId, dateTime, startOrEnd):
 
 def durationInput():
 	pass
+	
