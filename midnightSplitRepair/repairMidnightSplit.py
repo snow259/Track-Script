@@ -2,12 +2,14 @@ import os
 import datetime as dt
 import databaseOperations as dbf
 
+#Collects both sessions that start at and end at midnight
 def collectMidnightSessions():
 	midnightEnd = dbf.returnMidnightEnd()
 	midnightStart = dbf.returnMidnightStart()
 
 	return midnightEnd, midnightStart
 
+#Prints the sessions with key
 def printSessions(session):
 	rowId = str(session['id'])
 	name = str(session['name'])
@@ -17,6 +19,7 @@ def printSessions(session):
 	sessionString = 'id: ' + rowId + ' name: ' + name + ' startTime: ' + startTime + ' endTime: ' + endTime
 	print(sessionString)
 
+#For a given session starting before midnight, this function looks for a corresponding session starting after midnight and returns the pair
 def findEnd(session, midnightStart):
 	startTime = session['startTime']
 	startTime = stringToDateTime(startTime)
@@ -47,9 +50,33 @@ def stringToDateTime(dateTimeString):
 
 	return dateTime
 
+#Takes all session pairs, and merges them into a single session. Also returns rowId of the second session for deletion
 def mergeSessions(sessionPairs):
-	pass
+	mergedSessions = []
+	deleteRowIds = []
+	for sessionPair in sessionPairs:
+		startSession = sessionPair['startSession']
+		endSession = sessionPair['endSession']
 
+		rowId = startSession['id']
+		deleteRowId = endSession['id']
+
+		startTime = startSession['startTime']
+		startTime = stringToDateTime(startTime)
+
+		endTime = endSession['endTime']
+		endTime = stringToDateTime(endTime)
+
+		duration = endTime - startTime
+
+		mergedSession = {'id': rowId, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
+
+		mergedSessions.append(mergedSession)
+		deleteRowIds.append(deleteRowId)
+
+	return mergedSessions, deleteRowIds
+
+#Looks for sessions that begin after midnight and do not have a corresponding session beginning before midnight
 def findUnpairedMidnightStart(midnightStart, sessionPairs):
 	unpairedMidnightStart = []
 	for session in midnightStart:
@@ -67,6 +94,16 @@ def findUnpairedMidnightStart(midnightStart, sessionPairs):
 
 	return unpairedMidnightStart
 
+def updateDatabase(mergedSessions):
+	for session in mergedSessions:
+		dbf.modifySession(session)
+
+def deleteSessions(deleteRowIds):
+	for rowId in deleteRowIds:
+		print(rowId)
+		dbf.deleteSession(rowId)
+
+#Just a print thing for debugging and to see how the data looks. Prints count and sessions of: pairs, unpaired before midnight, unpaired after midnight
 def printProcessedSessions(sessionPairs, unpairedMidnightEnd, unpairedMidnightStart):
 	print('Session Pairs: ' + str(len(sessionPairs)))
 	print('Unpaired Midnight End: ' + str(len(unpairedMidnightEnd)))
@@ -83,6 +120,7 @@ def printProcessedSessions(sessionPairs, unpairedMidnightEnd, unpairedMidnightSt
 	for session in unpairedMidnightStart:
 		printSessions(session)
 
+#Main control loop
 def main():
 	midnightEnd, midnightStart = collectMidnightSessions()
 
@@ -96,7 +134,11 @@ def main():
 			sessionPairs.append(sessionPair)
 	unpairedMidnightStart = findUnpairedMidnightStart(midnightStart, sessionPairs)
 
-	mergedSessions = mergeSessions(sessionPairs)
+	mergedSessions, deleteRowIds = mergeSessions(sessionPairs)
+
+	printProcessedSessions(sessionPairs, unpairedMidnightEnd, unpairedMidnightStart)
+	# updateDatabase(mergedSessions)
+	# deleteSessions(deleteRowIds)
 
 if __name__ == '__main__':
 	main()

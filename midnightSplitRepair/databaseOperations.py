@@ -19,6 +19,22 @@ def returnMidnightStart():
 
 	return midnightStart
 
+#Allows editing of the name, start, and end times of a session. Duration is recomputed after, in track.py
+def modifySession(session):
+	rowId = session['id']
+	startTime = session['startTime']
+	endTime = session['endTime']
+	duration = session['duration']
+	modifySessionString = 'UPDATE Games SET startTime = ?, endTime = ?, duration = ? WHERE id IS ?'
+	argument = (startTime, endTime, str(duration), int(rowId))
+	executeWrite(databasePath, modifySessionString, argument, 'modifySession()')
+
+#Deletes specified sessions
+def deleteSession(rowId):
+	deleteString = 'DELETE FROM Games WHERE id IS ?'
+	argument = (rowId, )
+	executeWrite(databasePath, deleteString, argument, 'deleteSession()')
+
 #Called by all functions that read the database and return a variable
 def executeRead(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
