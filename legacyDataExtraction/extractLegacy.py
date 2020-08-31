@@ -32,30 +32,30 @@ def readCsv(file):
 
 	return lines
 
-#Removes title row, mentions of month, and all empty spaces
+#Removes title row, mentions of month, and all empty spaces by copying row into another variable, and not copying the stuff to be removed
 def deleteExtraneous(lines):
 	numberOfRows = len(lines)
-	rowsToDelete = []
+	linesPruned = []
 
 	for i in range(numberOfRows):
 		row = lines[i]
 
 		if row == titleRow:
-			rowsToDelete.append(i)
+			pass
 		else:
+			rowPruned = []
 			for element in row:
 				if element in months:
-					row.remove(element)
-				if element in days:
-					row.remove(element)
-				if element == '':
-					row.remove(element)
-			lines[i] = row
+					pass
+				elif element in days:
+					pass
+				elif element == '':
+					pass
+				else:
+					rowPruned.append(element)
+			linesPruned.append(rowPruned)
 
-	for i in rowsToDelete:
-		lines.remove(lines[i])
-
-	return lines
+	return linesPruned
 
 def writeLines(file, lines):
 	for row in lines:
