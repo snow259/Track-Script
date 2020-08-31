@@ -80,8 +80,12 @@ def convertSession(dateStamp, session):
 	*nameSplit, startTimeRaw, _, endTimeRaw = session.split()
 
 	name = joinName(nameSplit)
-	startTime = generateTimeStamp(dateStamp, startTimeRaw)
-	endTime = generateTimeStamp(dateStamp, endTimeRaw)
+	try:
+		startTime = generateTimeStamp(dateStamp, startTimeRaw)
+		endTime = generateTimeStamp(dateStamp, endTimeRaw)
+	except Exception:
+		print('Error in: ' + dateStamp + ' ' + session)
+		
 	duration = calculateDuration(startTime, endTime)
 
 	session = {'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
