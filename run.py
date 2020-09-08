@@ -1,6 +1,7 @@
 import track
 import dataInputAndValidity as di
 import randomChoice as rc
+import gameLife as gl
 
 backupInterval = 5	#Value is in days
 userDeclinedBackup = [False]	#Editable within function
@@ -47,6 +48,8 @@ def noOpenSessions():
 			runBackup()
 		elif command == 'random':
 			rc.randomGame(argument)
+		elif command == 'gamelife':
+			gl.populateGameLife()
 		elif command == 'exit':
 			loop[0] = False
 	else:

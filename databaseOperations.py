@@ -9,6 +9,7 @@ fileDirectory = os.path.dirname(filePath)
 dataDirectory = fileDirectory + '\\Data'
 backupDirectory = fileDirectory + '\\Backup'
 databasePath = dataDirectory + '\\mainDatabase.db'
+archivePath = dataDirectory + '\\archiveDatabase.db'
 
 #Checks if folder for databases exists, creates elsewise
 def checkForDataFolder():
@@ -72,6 +73,26 @@ def returnRow(rowId):
 
 	return row
 
+#Returns list of table names from the database
+def returnTablesList():
+	returnTableListString = 'SELECT name FROM sqlite_master WHERE type = "table"'
+	argument = None
+	rows = executeRead(databasePath, returnTableListString, argument, 'createTable()')
+	tables = []
+	for row in rows:
+		#Here, the contents of the sqlite3.Row object is extracted. I have no idea what the key for this is, else this would be neater to code
+		for element in row:
+			tables.append(element)
+
+	return tables
+
+def returnArchiveContents():
+	returnArchiveContentsString = 'SELECT * FROM Games'
+	argument = None
+	rows = executeRead(archivePath, returnArchiveContentsString, argument, 'returnArchiveContents()')
+
+	return rows
+
 #Writes session to database
 def writeSession(rowId, name, startTime, endTime, duration):
 	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
@@ -113,6 +134,21 @@ def vacuumMain():
 	vacuumMainString = 'VACUUM'
 	argument = None
 	executeWrite(databasePath, vacuumMainString, argument, 'vacuumMain()')
+
+def createGameLifeTable():
+	createLastPlayedTableString = 'CREATE TABLE GameLife (id INTEGER PRIMARY KEY, name TEXT NOT NULL, firstPlayed TIMESTAMP, lastPlayed TIMESTAMP)'
+	argument = None
+	executeWrite(databasePath, createLastPlayedTableString, argument, 'createGameLifeTable()')
+
+def addGameToGameLifeTable(name, firstPlayed, lastPlayed):
+	addGameLastPlayedTableString = 'INSERT INTO GameLife VALUES(?, ?, ?, ?)'
+	argument = (None, name, firstPlayed, lastPlayed)
+	executeWrite(databasePath, addGameLastPlayedTableString, argument, 'addGameToGameLifeTable()')
+
+def updateGameLife(name, key, value):
+	updateLastPlayedString = 'UPDATE GameLife SET ' + key + ' = ? WHERE name IS ?'
+	argument = (value, name)
+	executeWrite(databasePath, updateLastPlayedString, argument, 'updateGameLife()')
 
 #Called by all functions that read the database and return a variable
 def executeRead(databasePath, commandString, argument, functionName):
