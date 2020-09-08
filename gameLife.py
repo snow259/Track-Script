@@ -1,6 +1,7 @@
 import databaseOperations as dataops
 import timeFunctions as tf
 
+#Checks if table GameLife exists. Creates it if it doesn't. This is done on import
 def checkForTables():
 	tables = dataops.returnTablesList()
 
@@ -8,6 +9,7 @@ def checkForTables():
 		dataops.createGameLifeTable()
 		populateGameLife()
 
+#If table was just created, function fills it with all existing game lives.
 def populateGameLife():
 	mainDatabaseRows = dataops.returnDatabaseContents()
 	archiveRows = dataops.returnArchiveContents()
@@ -19,8 +21,9 @@ def populateGameLife():
 	life = findAllLife(life, mainDatabaseRows)
 	life = findAllLife(life, archiveRows)
 
-	writeLife(life)
+	writeNewLife(life)
 
+#Finds all game names from provided rows and appends them to the life dictionary if it is not found in it
 def populateNames(life, rows):
 	for row in rows:
 		name = row['name']
@@ -29,21 +32,14 @@ def populateNames(life, rows):
 
 	return life
 
-def writeLife(life):
+#Writes all game life to table.
+#TODO: reuse function for updating
+def writeNewLife(life):
 	for game in life:
 		name = game
 		firstPlayed = life[game]['firstPlayed']
 		lastPlayed = life[game]['lastPlayed']
-		if firstPlayed == None and lastPlayed != None:
-			key = 'lastPlayed'
-			value = lastPlayed
-			dataops.updateGameLife(name, key, value)
-		elif firstPlayed != None and lastPlayed == None:
-			key = 'firstPlayed'
-			value = lastPlayed
-			dataops.updateGameLife(name, key, value)
-		else:
-			dataops.addGameToGameLifeTable(name, firstPlayed, lastPlayed)
+		dataops.addGameToGameLifeTable(name, firstPlayed, lastPlayed)
 
 #Replaces None with datetime, if not none replaces lastPlayedTime with endTime if endTime is more recent
 #dateime > datetime implies the numbers in the first datetime are larger, which will be due to it being more recent
@@ -75,6 +71,7 @@ def findAllLife(life, rows):
 
 	return life
 
+#Updates the life of games within the dictionary
 def updateLife(life):
 	writeLife(life)
 

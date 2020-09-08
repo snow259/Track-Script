@@ -89,8 +89,6 @@ def userInputEndTime(rowId = None):
 	inputCorrect = False
 	while inputCorrect == False:
 		userEndTime = di.timeInput(None, 'Enter end time in format: YYYY-MM-DD HH:MM:SS\n', 'endTime')
-		# userEndTime = input('Enter end time in format: YYYY-MM-DD HH:MM:SS\n')
-		# userEndTime = userEndTime.strip()
 		if userEndTime != '/cancel':
 			isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)\n'
 			isThisRight = input(isThisRightString)

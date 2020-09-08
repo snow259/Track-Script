@@ -86,6 +86,7 @@ def returnTablesList():
 
 	return tables
 
+#Returns all rows from archive database
 def returnArchiveContents():
 	returnArchiveContentsString = 'SELECT * FROM Games'
 	argument = None
@@ -135,16 +136,19 @@ def vacuumMain():
 	argument = None
 	executeWrite(databasePath, vacuumMainString, argument, 'vacuumMain()')
 
+#Creates the table GameLife to store all game lives
 def createGameLifeTable():
 	createLastPlayedTableString = 'CREATE TABLE GameLife (id INTEGER PRIMARY KEY, name TEXT NOT NULL, firstPlayed TIMESTAMP, lastPlayed TIMESTAMP)'
 	argument = None
 	executeWrite(databasePath, createLastPlayedTableString, argument, 'createGameLifeTable()')
 
+#Adds new game to the table
 def addGameToGameLifeTable(name, firstPlayed, lastPlayed):
 	addGameLastPlayedTableString = 'INSERT INTO GameLife VALUES(?, ?, ?, ?)'
 	argument = (None, name, firstPlayed, lastPlayed)
 	executeWrite(databasePath, addGameLastPlayedTableString, argument, 'addGameToGameLifeTable()')
 
+#Edits existing game life
 def updateGameLife(name, key, value):
 	updateLastPlayedString = 'UPDATE GameLife SET ' + key + ' = ? WHERE name IS ?'
 	argument = (value, name)

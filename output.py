@@ -8,6 +8,7 @@ def printOutput(rows):
 	maxLengths = valueMaxLengths(unpacked)
 	printStrings(unpacked, maxLengths)
 
+#TODO: make function key agnostic
 def unpack(rows):
 	unpacked = {'id': [], 'name': [], 'startTime': [], 'endTime': [], 'duration': []}
 
@@ -17,6 +18,7 @@ def unpack(rows):
 
 	return unpacked
 
+#TODO: make function key agnostic
 def valueMaxLengths(unpacked):
 	maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
 
@@ -29,6 +31,7 @@ def valueMaxLengths(unpacked):
 
 	return maxLengths
 
+#TODO: make function key agnostic
 def printStrings(unpacked, maxLengths):
 	#Print top row
 	stringElements = {'id': '', 'name': '', 'startTime': '', 'endTime': '', 'duration': ''}
