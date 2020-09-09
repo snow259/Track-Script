@@ -113,6 +113,7 @@ def listSessions():
 		print('No sessions found in database')
 	if len(rows) > 0:
 		op.printOutput(rows)
+		return rows
 
 #Input here must be a list even if the number of rowId is 1
 #If input is a string, it will iterate through the string and split up a single number into multiple digits
@@ -138,6 +139,7 @@ def listSpecificSessions(rowIds):
 		listSessions()
 	else:
 		op.printOutput(rows)
+		return rows
 
 #Checks for cancel in every input prior to proceeding, can select session via id and edit name and times
 def editSession():
@@ -165,8 +167,7 @@ def editSession():
 				if key == 'startTime' or key == 'endTime':
 					calculateDuration(rowId)
 
-				print('Edited session now is:')
-				listSpecificSessions([rowId])
+				return rowId, key, value
 
 #If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId = None):

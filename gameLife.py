@@ -71,9 +71,61 @@ def findAllLife(life, rows):
 
 	return life
 
+def updateLifeClosed():
+	pass
+
 #Updates the life of games within the dictionary
-def updateLife(life):
-	writeLife(life)
+def updateLifeEdited(rowsBeforeEdit, editDetails):
+	life = dataops.returnGamesLife()
+	life = convertLifeRows(life)
+
+	rowId = editDetails['id']
+	originalSession = findOriginalSession(rowsBeforeEdit, rowId)
+
+	if 'startTime' in editDetails:
+		name = originalSession['name']
+
+		firstPlayed = life[name]['firstPlayed']
+		originalStartTime = originalSession['startTime']
+		newStartTime = editDetails['startTime']
+
+		if originalStartTime == firstPlayed:
+			dataops.updateGameLife(name, 'firstPlayed', newStartTime):
+	elif 'endTime' in editDetails:
+		name = originalSession['name']
+
+		lastPlayed = life[name]['lastPlayed']
+		originalEndTime = originalSession['endTime']
+		newEndTime = editDetails['endTime']
+
+		if originalStartTime == lastPlayed:
+			dataops.updateGameLife(name, 'lastPlayed', newEndTime):
+	elif 'name' in editDetails:
+		pass
+
+#Converts life from sqlite3.Row objects to dictionary
+def convertLifeRows(life):
+	convertedLife = {}
+	for i in range(len(life)):
+		row = life[i]
+		name = row['name']
+		firstPlayed = row['firstPlayed']
+		lastPlayed = row['lastPlayed']
+
+		convertedLife[name] = {'firstPlayed': firstPlayed, 'lastPlayed': lastPlayed}
+
+	return convertedLife
+
+def findOriginalSession(rowsBeforeEdit, rowId):
+	for row in rowsBeforeEdit:
+		if row['id'] == rowId:
+			name = row['name']
+			startTime = row['startTime']
+			endTime = row['endTime']
+			duration = row['duration']
+			originalSession = {'id': rowId, 'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
+			
+			return originalSession
 
 def findLife(name):
 	pass

@@ -1,7 +1,6 @@
 import track
+import commands as cmd
 import dataInputAndValidity as di
-import randomChoice as rc
-import gameLife as gl
 
 backupInterval = 5	#Value is in days
 userDeclinedBackup = [False]	#Editable within function
@@ -36,20 +35,17 @@ def noOpenSessions():
 	if inputString.startswith('/'):
 		command, argument = di.processCommand(inputString)
 		if command == 'edit':
-			track.listSessions()
-			track.editSession()
+			cmd.editCommand(argument)
 		elif command == 'delete':
-			track.listSessions()
-			track.deleteSession()
-			track.listSessions()
+			cmd.deleteCommand(argument)
 		elif command == 'list':
-			track.listSessions()
+			cmd.listCommand(argument)
 		elif command == 'backup':
-			runBackup()
+			cmd.backupCommand(argument)
 		elif command == 'random':
-			rc.randomGame(argument)
+			cmd.randomCommand(argument)
 		elif command == 'gamelife':
-			gl.populateGameLife()
+			cmd.gamelifeCommand(argument)
 		elif command == 'exit':
 			loop[0] = False
 	else:

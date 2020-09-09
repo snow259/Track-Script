@@ -94,6 +94,13 @@ def returnArchiveContents():
 
 	return rows
 
+def returnGameLife():
+	returnGameLifeString = 'SELECT * FROM GameLife'
+	argument = None
+	rows = executeRead(mainDatabase, returnGameLifeString, argument, 'returnGameLife()')
+
+	return rows
+
 #Writes session to database
 def writeSession(rowId, name, startTime, endTime, duration):
 	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
