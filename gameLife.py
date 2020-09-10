@@ -89,7 +89,7 @@ def updateLifeClosed(openSession, endTime):
 
 #Updates the life of games within the dictionary
 def updateLifeEdited(rowsBeforeEdit, editDetails):
-	life = dataops.returnGamesLife()
+	life = dataops.returnGameLife()
 	life = convertLifeRows(life)
 
 	rowId = editDetails['id']
@@ -111,7 +111,7 @@ def updateLifeEdited(rowsBeforeEdit, editDetails):
 		originalEndTime = originalSession['endTime']
 		newEndTime = editDetails['endTime']
 
-		if originalStartTime == lastPlayed:
+		if originalEndTime == lastPlayed:
 			dataops.updateGameLife(name, 'lastPlayed', newEndTime)
 	elif 'name' in editDetails:
 		pass
@@ -131,13 +131,14 @@ def convertLifeRows(life):
 
 def findOriginalSession(rowsBeforeEdit, rowId):
 	for row in rowsBeforeEdit:
-		if row['id'] == rowId:
+
+		if row['id'] == int(rowId):
 			name = row['name']
 			startTime = row['startTime']
 			endTime = row['endTime']
 			duration = row['duration']
 			originalSession = {'id': rowId, 'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
-			
+
 			return originalSession
 
 def findLife(name):

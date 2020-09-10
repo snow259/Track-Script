@@ -16,7 +16,7 @@ def editCommand(argument):
 			rowId, key, value = editDetails
 
 			print('Edited session now is:')
-			_ = listSpecificSessions([rowId])[0]	#List containing rows
+			_ = track.listSpecificSessions([rowId])[0]	#List containing rows
 
 			editDetails = {'id': rowId, key: value}
 			if key == 'startTime' or key == 'endTime':
