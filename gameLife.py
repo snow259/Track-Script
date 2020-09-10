@@ -71,8 +71,21 @@ def findAllLife(life, rows):
 
 	return life
 
-def updateLifeClosed():
-	pass
+def updateLifeClosed(openSession, endTime):
+	life = dataops.returnGameLife()
+	life = convertLifeRows(life)
+	name = openSession['name']
+	startTime = openSession['startTime']
+
+	if name not in life:
+		newLife = {name: {'firstPlayed': startTime, 'lastPlayed': endTime}}
+		writeNewLife(newLife)
+	else:
+		originalLastPlayed = life[name]['lastPlayed']
+		originalLastPlayed = tf.stringToDatetime(originalLastPlayed)
+
+		if originalLastPlayed < endTime:
+			dataops.updateGameLife(name, 'lastPlayed', endTime)
 
 #Updates the life of games within the dictionary
 def updateLifeEdited(rowsBeforeEdit, editDetails):
@@ -90,7 +103,7 @@ def updateLifeEdited(rowsBeforeEdit, editDetails):
 		newStartTime = editDetails['startTime']
 
 		if originalStartTime == firstPlayed:
-			dataops.updateGameLife(name, 'firstPlayed', newStartTime):
+			dataops.updateGameLife(name, 'firstPlayed', newStartTime)
 	elif 'endTime' in editDetails:
 		name = originalSession['name']
 
@@ -99,7 +112,7 @@ def updateLifeEdited(rowsBeforeEdit, editDetails):
 		newEndTime = editDetails['endTime']
 
 		if originalStartTime == lastPlayed:
-			dataops.updateGameLife(name, 'lastPlayed', newEndTime):
+			dataops.updateGameLife(name, 'lastPlayed', newEndTime)
 	elif 'name' in editDetails:
 		pass
 

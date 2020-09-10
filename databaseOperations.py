@@ -97,7 +97,7 @@ def returnArchiveContents():
 def returnGameLife():
 	returnGameLifeString = 'SELECT * FROM GameLife'
 	argument = None
-	rows = executeRead(mainDatabase, returnGameLifeString, argument, 'returnGameLife()')
+	rows = executeRead(databasePath, returnGameLifeString, argument, 'returnGameLife()')
 
 	return rows
 

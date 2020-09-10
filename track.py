@@ -25,6 +25,7 @@ def printOpenSession(row, repair = False):
 	rowId = row['id']
 	game = row['name']
 	startTime = row['startTime']
+	openSession = {'id': rowId, 'name': game, 'startTime': startTime}
 
 	if repair == False:
 		outString = 'Open session:\n' + str(game) + ' ' + str(startTime)
@@ -32,6 +33,8 @@ def printOpenSession(row, repair = False):
 		outString = str(rowId) + ' ' + str(game) + ' ' + str(startTime)
 
 	print(outString)
+
+	return openSession
 
 def multipleSessionRepairChoice(rows):
 	print('Multiple open sessions found:')
@@ -83,7 +86,9 @@ def inputEnd(rowId):
 	elif choice == 'delete':
 		deleteSession(rowId)
 	elif choice == 'input':
-		userInputEndTime()
+		endTime = userInputEndTime()
+
+	return choice, endTime
 
 def userInputEndTime(rowId = None):
 	inputCorrect = False
@@ -99,9 +104,10 @@ def userInputEndTime(rowId = None):
 
 	#rowId defaults to None, and session is closed via closeSession as normal. If rowId is provided, modifySession is used instead to edit endTime
 	if userEndTime != '/cancel':
-		endTime = userEndTime
+		endTime = tf.stringToDatetime(userEndTime)
 		if rowId == None:
 			dataops.closeSession(endTime)
+			return endTime
 		elif rowId != None:
 			key = 'endTime'
 			dataops.modifySession(rowId, key, endTime)
