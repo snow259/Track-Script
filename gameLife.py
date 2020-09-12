@@ -95,26 +95,95 @@ def updateLifeEdited(rowsBeforeEdit, editDetails):
 	rowId = editDetails['id']
 	originalSession = findOriginalSession(rowsBeforeEdit, rowId)
 
+	name = originalSession['name']
+
+	firstPlayed = life[name]['firstPlayed']
+	firstPlayed = tf.stringToDatetime(firstPlayed)
+	lastPlayed = life[name]['lastPlayed']
+	lastPlayed = tf.stringToDatetime(lastPlayed)
+
+	originalStartTime = originalSession['startTime']
+	originalStartTime = tf.stringToDatetime(originalStartTime)
+	originalEndTime = originalSession['endTime']
+	originalEndTime = tf.stringToDatetime(originalEndTime)
+
+	lifeToEdit = {}
 	if 'startTime' in editDetails:
-		name = originalSession['name']
-
-		firstPlayed = life[name]['firstPlayed']
-		originalStartTime = originalSession['startTime']
-		newStartTime = editDetails['startTime']
-
 		if originalStartTime == firstPlayed:
-			dataops.updateGameLife(name, 'firstPlayed', newStartTime)
+			lifeToEdit[name] = 'both'
 	elif 'endTime' in editDetails:
-		name = originalSession['name']
-
-		lastPlayed = life[name]['lastPlayed']
-		originalEndTime = originalSession['endTime']
-		newEndTime = editDetails['endTime']
-
 		if originalEndTime == lastPlayed:
-			dataops.updateGameLife(name, 'lastPlayed', newEndTime)
+			lifeToEdit[name] = 'both'
 	elif 'name' in editDetails:
 		pass
+
+	if len(lifeToEdit) > 0:
+		newLife = findNewLife(life, lifeToEdit)
+		for name in newLife:
+			key = lifeToEdit[name]
+			if key == 'both':
+				firstPlayed = newLife[name]['firstPlayed']
+				lastPlayed = newLife[name]['lastPlayed']
+				dataops.updateGameLife(name, 'firstPlayed', firstPlayed)
+				dataops.updateGameLife(name, 'lastPlayed', lastPlayed)
+
+def updateLifeDeleted(rowsBeforeDelete, rowIds):
+	life = dataops.returnGameLife()
+	life = convertLifeRows(life)
+
+	deletedRows = []
+	for rowId in rowIds:
+		deletedRow = findOriginalSession(rowsBeforeDelete, rowId)
+		deletedRows.append(deletedRow)
+
+	lifeToEdit = {}
+	for row in deletedRows:
+		name = row['name']
+		for gameLifeName in life:
+			if gameLifeName == name:
+				firstPlayed = life[gameLifeName]['firstPlayed']
+				lastPlayed = life[gameLifeName]['lastPlayed']
+				startTime = row['startTime']
+				endTime = row['endTime']
+
+				if firstPlayed == startTime and lastPlayed == endTime:
+					dataops.deleteGameLife(name)
+				elif firstPlayed == startTime:
+					lifeToEdit[name] = 'both'
+				elif lastPlayed == endTime:
+					lifeToEdit[name] = 'both'
+
+	if len(lifeToEdit) > 0:
+		newLife = findNewLife(life, lifeToEdit)
+		for name in newLife:
+			key = lifeToEdit[name]
+			if key == 'both':
+				firstPlayed = newLife[name]['firstPlayed']
+				lastPlayed = newLife[name]['lastPlayed']
+				dataops.updateGameLife(name, 'firstPlayed', firstPlayed)
+				dataops.updateGameLife(name, 'lastPlayed', lastPlayed)
+
+#Finds updated life of game
+def findNewLife(life, lifeToEdit):
+	mainDatabaseRows = dataops.returnDatabaseContents()
+	archiveRows = dataops.returnArchiveContents()
+
+	#Filling life with known values
+	newLife = {}
+	for name in lifeToEdit:
+		if lifeToEdit[name] == 'firstPlayed':
+			lastPlayed = life[name]['lastPlayed']
+			newLife[name] = {'firstPlayed': None, 'lastPlayed': lastPlayed}
+		elif lifeToEdit[name] == 'lastPlayed':
+			firstPlayed = life[name]['firstPlayed']
+			newLife[name] = {'firstPlayed': firstPlayed, 'lastPlayed': None}
+		elif lifeToEdit[name] == 'both':
+			newLife[name] = {'firstPlayed': None, 'lastPlayed': None}
+
+	newLife = findAllLife(newLife, mainDatabaseRows)
+	newLife = findAllLife(newLife, archiveRows)
+
+	return newLife
 
 #Converts life from sqlite3.Row objects to dictionary
 def convertLifeRows(life):
@@ -129,8 +198,8 @@ def convertLifeRows(life):
 
 	return convertedLife
 
-def findOriginalSession(rowsBeforeEdit, rowId):
-	for row in rowsBeforeEdit:
+def findOriginalSession(rowsBeforeEvent, rowId):
+	for row in rowsBeforeEvent:
 
 		if row['id'] == int(rowId):
 			name = row['name']

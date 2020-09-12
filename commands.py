@@ -23,15 +23,13 @@ def editCommand(argument):
 				gl.updateLifeEdited(rowsBeforeEdit, editDetails)
 
 def deleteCommand(argument):
-	track.listSessions()
-	track.deleteSession()
-	track.listSessions()
+	rowsBeforeDelete = track.listSessions()
+	rowIds = track.deleteSession()
+	rowsAfterDelete = track.listSessions()
+	gl.updateLifeDeleted(rowsBeforeDelete, rowIds)
 
 def listCommand(argument):
 	track.listSessions()
-
-def backupCommand(argument):
-	runBackup()
 
 def randomCommand(argument):
 	rc.randomGame(argument)

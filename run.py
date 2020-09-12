@@ -42,7 +42,7 @@ def noOpenSessions():
 		elif command == 'list':
 			cmd.listCommand(argument)
 		elif command == 'backup':
-			cmd.backupCommand(argument)
+			runBackup()
 		elif command == 'random':
 			cmd.randomCommand(argument)
 		elif command == 'gamelife':

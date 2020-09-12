@@ -161,6 +161,11 @@ def updateGameLife(name, key, value):
 	argument = (value, name)
 	executeWrite(databasePath, updateLastPlayedString, argument, 'updateGameLife()')
 
+def deleteGameLife(name):
+	deleteGameLifeString = 'DELETE FROM GameLife WHERE name IS ?'
+	argument = (name, )
+	executeWrite(databasePath, deleteGameLifeString, argument, 'deleteGameLife()')
+
 #Called by all functions that read the database and return a variable
 def executeRead(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)

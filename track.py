@@ -186,10 +186,12 @@ def deleteSession(rowId = None):
 			if proceed == 'y':
 				for rowId in rowIds:
 					dataops.deleteSession(int(rowId))
+				return rowIds
 	else:
 		dataops.deleteSession(rowId)
+		return [rowId]	#The other if branch returns a list, thus this shall too
 
-	checkSession()
+	# checkSession() #I am not sure what this is doing here
 
 #Checks if backupInterval days has passed from any startTime within the database.
 def backup(backupInterval):
