@@ -66,6 +66,7 @@ def calculateDuration(rowId):
 #Takes input from user, reads current time
 def userInput():
 	inputString = input('Enter game: ')
+	inputString = inputString.strip()
 	dateAndTimeRaw = dt.datetime.now()
 	gameTime = tf.processDateTime(dateAndTimeRaw)
 

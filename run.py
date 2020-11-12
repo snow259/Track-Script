@@ -49,6 +49,9 @@ def noOpenSessions():
 			cmd.gamelifeCommand(argument)
 		elif command == 'exit':
 			loop[0] = False
+	elif len(inputString) == 0:
+		#Stripped blank inputs have length 0
+		pass
 	else:
 		track.writeStart(inputString, gameTime)
 
