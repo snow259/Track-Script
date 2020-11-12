@@ -18,8 +18,8 @@ def populateGameLife():
 	life = populateNames(life, mainDatabaseRows)
 	life = populateNames(life, archiveRows)
 
-	life = findAllLife(life, mainDatabaseRows)
-	life = findAllLife(life, archiveRows)
+	life = findLife(life, mainDatabaseRows)
+	life = findLife(life, archiveRows)
 
 	writeNewLife(life)
 
@@ -43,7 +43,7 @@ def writeNewLife(life):
 
 #Replaces None with datetime, if not none replaces lastPlayedTime with endTime if endTime is more recent
 #dateime > datetime implies the numbers in the first datetime are larger, which will be due to it being more recent
-def findAllLife(life, rows):
+def findLife(life, rows):
 	for row in rows:
 		name = row['name']
 		startTime = row['startTime']
@@ -71,6 +71,7 @@ def findAllLife(life, rows):
 
 	return life
 
+#Checks life for mentions of game. If not found, adds row. Else, updates last played if required
 def updateLifeClosed(openSession, endTime):
 	life = dataops.returnGameLife()
 	life = convertLifeRows(life)
@@ -96,6 +97,31 @@ def updateLifeEdited(rowsBeforeEdit, editDetails):
 	originalSession = findOriginalSession(rowsBeforeEdit, rowId)
 
 	name = originalSession['name']
+
+	if 'startTime' in editDetails:
+		originalStartTime = originalSession['startTime']
+		originalStartTime = tf.stringToDatetime(originalStartTime)
+
+		firstPlayed = life[name]['firstPlayed']
+		firstPlayed = tf.stringToDatetime(firstPlayed)
+
+		if originalStartTime == firstPlayed:
+			pass
+			#Find life
+	elif 'endTime' in editDetails:
+		originalEndTime = originalSession['endTime']
+		originalEndTime = tf.stringToDatetime(originalEndTime)
+
+		lastPlayed = life[name]['lastPlayed']
+		lastPlayed = tf.stringToDatetime(lastPlayed)
+
+		if originalEndTime == lastPlayed:
+			pass
+			#Find life
+	elif 'name' in editDetails:
+		pass
+		#Find life for name edit
+		#Option: pass name to function to find life. If function does not find name anywhere, delete name from life
 
 	firstPlayed = life[name]['firstPlayed']
 	firstPlayed = tf.stringToDatetime(firstPlayed)
@@ -180,8 +206,8 @@ def findNewLife(life, lifeToEdit):
 		elif lifeToEdit[name] == 'both':
 			newLife[name] = {'firstPlayed': None, 'lastPlayed': None}
 
-	newLife = findAllLife(newLife, mainDatabaseRows)
-	newLife = findAllLife(newLife, archiveRows)
+	newLife = findLife(newLife, mainDatabaseRows)
+	newLife = findLife(newLife, archiveRows)
 
 	return newLife
 
@@ -209,8 +235,5 @@ def findOriginalSession(rowsBeforeEvent, rowId):
 			originalSession = {'id': rowId, 'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
 
 			return originalSession
-
-def findLife(name):
-	pass
 
 checkForTables()
