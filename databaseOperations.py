@@ -97,15 +97,15 @@ def returnArchiveContents():
 #Returns rows from main database containing specified game
 def returnGameMain(name):
 	returnGameMainString = 'SELECT * FROM Games WHERE name IS ?'
-	argument = name
+	argument = (name,)
 	rows = executeRead(databasePath, returnGameMainString, argument, 'returnGameMain()')
 
 	return rows
 
 #Returns rows from archive database containing specified game
 def returnGameArchive(name):
-	returnGameArchiveString = 'SELECT * FROM Games WHERE name is ?'
-	argument = name
+	returnGameArchiveString = 'SELECT * FROM Games WHERE name IS ?'
+	argument = (name,)
 	rows = executeRead(archivePath, returnGameArchiveString, argument, 'returnGameArchive()')
 
 	return rows

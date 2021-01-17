@@ -18,15 +18,15 @@ def editCommand(argument):
 			print('Edited session now is:')
 			_ = track.listSpecificSessions([rowId])[0]	#List containing rows
 
-			editDetails = {'id': rowId, key: value}
-			if key == 'startTime' or key == 'endTime':
-				gl.updateLifeEdited(rowsBeforeEdit, editDetails)
+			# editDetails = {'id': rowId, key: value}
+			# if key == 'startTime' or key == 'endTime':
+				# gl.updateLifeEdited(rowsBeforeEdit, editDetails)
 
 def deleteCommand(argument):
 	rowsBeforeDelete = track.listSessions()
 	rowIds = track.deleteSession()
 	rowsAfterDelete = track.listSessions()
-	gl.updateLifeDeleted(rowsBeforeDelete, rowIds)
+	# gl.updateLifeDeleted(rowsBeforeDelete, rowIds)
 
 def listCommand(argument):
 	track.listSessions()

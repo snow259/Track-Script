@@ -66,7 +66,8 @@ def oneOpenSession(rows):
 
 	#If session is closed in any manner, lastPlayed is updated
 	if choice == 'close' or choice == 'input':
-		gl.updateLifeClosed(openSession, endTime)
+		# gl.updateLifeClosed(openSession, endTime)
+		gl.checkLife(openSession['name'])
 
 #If openSessions > 1, take input for repair choice, then repair
 def manyOpenSessions(rows):
@@ -92,3 +93,4 @@ if __name__ == '__main__':
 			oneOpenSession(rows)
 		elif openSessions > 1:
 			manyOpenSessions(rows)
+#TODO: Make standard the positioning of the call to tf for converting string type to datetime type
