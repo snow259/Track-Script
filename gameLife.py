@@ -84,170 +84,6 @@ def convertLifeRows(life):
 
 	return convertedLife
 
-# #Checks life for mentions of game. If not found, adds row. Else, updates last played if required
-# def updateLifeClosed(openSession, endTime):
-# 	life = dataops.returnGameLife()
-# 	life = convertLifeRows(life)
-# 	name = openSession['name']
-# 	startTime = openSession['startTime']
-
-# 	if name not in life:
-# 		newLife = {name: {'firstPlayed': startTime, 'lastPlayed': endTime}}
-# 		writeNewLife(newLife)
-# 	else:
-# 		originalLastPlayed = life[name]['lastPlayed']
-# 		originalLastPlayed = tf.stringToDatetime(originalLastPlayed)
-
-# 		if originalLastPlayed < endTime:
-# 			dataops.updateGameLife(name, 'lastPlayed', endTime)
-
-# #Updates the life of games within the dictionary
-# def updateLifeEdited(rowsBeforeEdit, editDetails):
-# 	life = dataops.returnGameLife()
-# 	life = convertLifeRows(life)
-
-# 	rowId = editDetails['id']
-# 	originalSession = findOriginalSession(rowsBeforeEdit, rowId)
-
-# 	name = originalSession['name']
-
-# 	if 'startTime' in editDetails:
-# 		originalStartTime = originalSession['startTime']
-# 		originalStartTime = tf.stringToDatetime(originalStartTime)
-
-# 		firstPlayed = life[name]['firstPlayed']
-# 		firstPlayed = tf.stringToDatetime(firstPlayed)
-
-# 		if originalStartTime == firstPlayed:
-# 			pass
-# 			#Find life
-# 	elif 'endTime' in editDetails:
-# 		originalEndTime = originalSession['endTime']
-# 		originalEndTime = tf.stringToDatetime(originalEndTime)
-
-# 		lastPlayed = life[name]['lastPlayed']
-# 		lastPlayed = tf.stringToDatetime(lastPlayed)
-
-# 		if originalEndTime == lastPlayed:
-# 			pass
-# 			#Find life
-# 	elif 'name' in editDetails:
-# 		pass
-# 		#Find life for name edit
-# 		#Option: pass name to function to find life. If function does not find name anywhere, delete name from life
-
-# 	firstPlayed = life[name]['firstPlayed']
-# 	firstPlayed = tf.stringToDatetime(firstPlayed)
-# 	lastPlayed = life[name]['lastPlayed']
-# 	lastPlayed = tf.stringToDatetime(lastPlayed)
-
-# 	originalStartTime = originalSession['startTime']
-# 	originalStartTime = tf.stringToDatetime(originalStartTime)
-# 	originalEndTime = originalSession['endTime']
-# 	originalEndTime = tf.stringToDatetime(originalEndTime)
-
-# 	lifeToEdit = {}
-# 	if 'startTime' in editDetails:
-# 		if originalStartTime == firstPlayed:
-# 			lifeToEdit[name] = 'both'
-# 	elif 'endTime' in editDetails:
-# 		if originalEndTime == lastPlayed:
-# 			lifeToEdit[name] = 'both'
-# 	elif 'name' in editDetails:
-# 		pass
-
-# 	if len(lifeToEdit) > 0:
-# 		newLife = findNewLife(life, lifeToEdit)
-# 		for name in newLife:
-# 			key = lifeToEdit[name]
-# 			if key == 'both':
-# 				firstPlayed = newLife[name]['firstPlayed']
-# 				lastPlayed = newLife[name]['lastPlayed']
-# 				dataops.updateGameLife(name, 'firstPlayed', firstPlayed)
-# 				dataops.updateGameLife(name, 'lastPlayed', lastPlayed)
-
-# def updateLifeDeleted(rowsBeforeDelete, rowIds):
-# 	life = dataops.returnGameLife()
-# 	life = convertLifeRows(life)
-
-# 	deletedRows = []
-# 	for rowId in rowIds:
-# 		deletedRow = findOriginalSession(rowsBeforeDelete, rowId)
-# 		deletedRows.append(deletedRow)
-
-# 	lifeToEdit = {}
-# 	for row in deletedRows:
-# 		name = row['name']
-# 		for gameLifeName in life:
-# 			if gameLifeName == name:
-# 				firstPlayed = life[gameLifeName]['firstPlayed']
-# 				lastPlayed = life[gameLifeName]['lastPlayed']
-# 				startTime = row['startTime']
-# 				endTime = row['endTime']
-
-# 				if firstPlayed == startTime and lastPlayed == endTime:
-# 					dataops.deleteGameLife(name)
-# 				elif firstPlayed == startTime:
-# 					lifeToEdit[name] = 'both'
-# 				elif lastPlayed == endTime:
-# 					lifeToEdit[name] = 'both'
-
-# 	if len(lifeToEdit) > 0:
-# 		newLife = findNewLife(life, lifeToEdit)
-# 		for name in newLife:
-# 			key = lifeToEdit[name]
-# 			if key == 'both':
-# 				firstPlayed = newLife[name]['firstPlayed']
-# 				lastPlayed = newLife[name]['lastPlayed']
-# 				dataops.updateGameLife(name, 'firstPlayed', firstPlayed)
-# 				dataops.updateGameLife(name, 'lastPlayed', lastPlayed)
-
-# #Finds updated life of game
-# def findNewLife(life, lifeToEdit):
-# 	mainDatabaseRows = dataops.returnDatabaseContents()
-# 	archiveRows = dataops.returnArchiveContents()
-
-# 	#Filling life with known values
-# 	newLife = {}
-# 	for name in lifeToEdit:
-# 		if lifeToEdit[name] == 'firstPlayed':
-# 			lastPlayed = life[name]['lastPlayed']
-# 			newLife[name] = {'firstPlayed': None, 'lastPlayed': lastPlayed}
-# 		elif lifeToEdit[name] == 'lastPlayed':
-# 			firstPlayed = life[name]['firstPlayed']
-# 			newLife[name] = {'firstPlayed': firstPlayed, 'lastPlayed': None}
-# 		elif lifeToEdit[name] == 'both':
-# 			newLife[name] = {'firstPlayed': None, 'lastPlayed': None}
-
-# 	newLife = findLife(newLife, mainDatabaseRows)
-# 	newLife = findLife(newLife, archiveRows)
-
-# 	return newLife
-
-# def findOriginalSession(rowsBeforeEvent, rowId):
-# 	for row in rowsBeforeEvent:
-
-# 		if row['id'] == int(rowId):
-# 			name = row['name']
-# 			startTime = row['startTime']
-# 			endTime = row['endTime']
-# 			duration = row['duration']
-# 			originalSession = {'id': rowId, 'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
-
-# 			return originalSession
-
-# checkForTables()
-
-#All this stuff below is for the rewrite
-
-#def compaare() to compare a session and it's life, check if any times match or if session lies outside life
-
-#def findNewLife() to find the updated life of a game
-
-#def sessionDeleted() read life of name of session deleted, compare life with deleted session
-
-#def sessionEdited() read life of name of session edited, compare life with original session
-
 def checkLife(name):
 	life = dataops.returnGameLife()
 	life = convertLifeRows(life)
@@ -264,12 +100,12 @@ def checkLife(name):
 		updatedLife = {}
 		updatedLife[name] = {'firstPlayed': None, 'lastPlayed': None}
 
-		updatedLife = findLife(life, gameRowsMain)
-		updatedLife = findLife(life, gameRowsArchive)
+		updatedLife = findLife(updatedLife, gameRowsMain)
+		updatedLife = findLife(updatedLife, gameRowsArchive)
 
 		#Checks if name is a new game
 		if name not in life:
-			writeNewLife(life)
+			writeNewLife(updatedLife)
 
 		#If not a new game
 		else:

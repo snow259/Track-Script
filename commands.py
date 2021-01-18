@@ -14,19 +14,28 @@ def editCommand(argument):
 
 		if editDetails != None:
 			rowId, key, value = editDetails
-
 			print('Edited session now is:')
 			_ = track.listSpecificSessions([rowId])[0]	#List containing rows
 
-			# editDetails = {'id': rowId, key: value}
-			# if key == 'startTime' or key == 'endTime':
-				# gl.updateLifeEdited(rowsBeforeEdit, editDetails)
+			#If name is edited, check life of new name
+			if key == 'name':
+				gl.checkLife(value)
+
+			#Check life of original name, regardless of if name was edited
+			for row in rowsBeforeEdit:
+				if row['id'] == int(rowId):
+					gl.checkLife(row['name'])
+					break
 
 def deleteCommand(argument):
 	rowsBeforeDelete = track.listSessions()
 	rowIds = track.deleteSession()
 	rowsAfterDelete = track.listSessions()
-	# gl.updateLifeDeleted(rowsBeforeDelete, rowIds)
+
+	if rowIds != None:
+		for row in rowsBeforeDelete:
+			if row['id'] in rowIds:
+				gl.checkLife(row['name'])
 
 def listCommand(argument):
 	track.listSessions()
@@ -35,4 +44,4 @@ def randomCommand(argument):
 	rc.randomGame(argument)
 
 def gamelifeCommand(argument):
-	gl.populateGameLife()
+	pass

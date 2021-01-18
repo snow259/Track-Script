@@ -180,13 +180,17 @@ def editSession():
 def deleteSession(rowId = None):
 	if rowId == None:
 		rowIds = di.rowIdInput('Ender ids to delete: ', multipleRowIds = True)
+
 		if '/cancel' not in rowIds:
+			for i in range(0, len(rowIds)):
+				rowIds[i] = int(rowIds[i])
+				
 			print('The following sessions will be deleted: ')
 			listSpecificSessions(rowIds)
 			proceed = input('Proceed? (y/n)\n')
 			if proceed == 'y':
 				for rowId in rowIds:
-					dataops.deleteSession(int(rowId))
+					dataops.deleteSession(rowId)
 				return rowIds
 	else:
 		dataops.deleteSession(rowId)

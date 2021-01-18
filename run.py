@@ -94,3 +94,4 @@ if __name__ == '__main__':
 		elif openSessions > 1:
 			manyOpenSessions(rows)
 #TODO: Make standard the positioning of the call to tf for converting string type to datetime type
+#TODO: Make rowId inputs be int
