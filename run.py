@@ -60,13 +60,12 @@ def oneOpenSession(rows):
 	rowId = rows[0]['id']
 	row = rows[0]
 	openSession = track.printOpenSession(row)
-	choice, endTime = track.inputEnd(rowId)
+	choice = track.inputEnd(rowId)
 	track.checkDuration()
 	track.listSpecificSessions([rowId])
 
 	#If session is closed in any manner, lastPlayed is updated
 	if choice == 'close' or choice == 'input':
-		# gl.updateLifeClosed(openSession, endTime)
 		gl.checkLife(openSession['name'])
 
 #If openSessions > 1, take input for repair choice, then repair

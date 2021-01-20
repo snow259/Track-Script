@@ -88,8 +88,10 @@ def inputEnd(rowId):
 		deleteSession(rowId)
 	elif choice == 'input':
 		endTime = userInputEndTime()
+		if endTime == '/cancel':
+			choice = '/cancel'
 
-	return choice, endTime
+	return choice
 
 def userInputEndTime(rowId = None):
 	inputCorrect = False
@@ -101,7 +103,7 @@ def userInputEndTime(rowId = None):
 			if isThisRight == 'y':
 				inputCorrect = True
 		else:
-			break
+			return '/cancel'
 
 	#rowId defaults to None, and session is closed via closeSession as normal. If rowId is provided, modifySession is used instead to edit endTime
 	if userEndTime != '/cancel':
