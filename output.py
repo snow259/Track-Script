@@ -4,13 +4,17 @@ from itertools import count
 tabLength = 8
 
 def printOutput(rows):
-	unpacked = unpack(rows)
-	maxLengths = valueMaxLengths(unpacked)
-	printStrings(unpacked, maxLengths)
+	keysList = rows[0].keys()
+	#Following three functions are key agnostic, comment line within is an example of how the variable will look like when working with a complete row from Games table
+	unpacked = unpack(keysList, rows)
+	maxLengths = valueMaxLengths(keysList, unpacked)
+	printStrings(keysList, unpacked, maxLengths)
 
-#TODO: make function key agnostic
-def unpack(rows):
-	unpacked = {'id': [], 'name': [], 'startTime': [], 'endTime': [], 'duration': []}
+def unpack(keysList, rows):
+	# unpacked = {'id': [], 'name': [], 'startTime': [], 'endTime': [], 'duration': []}
+	unpacked = {}
+	for key in keysList:
+		unpacked[key] = []
 
 	for row in rows:
 		for key in unpacked:
@@ -18,9 +22,11 @@ def unpack(rows):
 
 	return unpacked
 
-#TODO: make function key agnostic
-def valueMaxLengths(unpacked):
-	maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
+def valueMaxLengths(keysList, unpacked):
+	# maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
+	maxLengths = {}
+	for key in keysList:
+		maxLengths[key] = 0
 
 	#For each value under a key, check if the length is greater than value in maxLengths
 	for key in unpacked:
@@ -31,10 +37,13 @@ def valueMaxLengths(unpacked):
 
 	return maxLengths
 
-#TODO: make function key agnostic
-def printStrings(unpacked, maxLengths):
+def printStrings(keysList, unpacked, maxLengths):
 	#Print top row
-	stringElements = {'id': '', 'name': '', 'startTime': '', 'endTime': '', 'duration': ''}
+	# stringElements = {'id': '', 'name': '', 'startTime': '', 'endTime': '', 'duration': ''}
+	stringElements = {}
+	for key in keysList:
+		stringElements[key] = ''
+
 	for key in unpacked:
 		stringElements[key] = key
 	outString = makeString(stringElements, maxLengths)

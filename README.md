@@ -84,6 +84,15 @@ It can also be run at any time by using the backup command.
 Enter game: /backup
 ```
 
+### Cancel
+
+Almost any input can be cancelled by means of the cancel command.
+
+```
+Ender ids to delete: /cancel
+Enter game:
+```
+
 Other Functions
 ===============
 
