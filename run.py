@@ -2,6 +2,7 @@ import track
 import commands as cmd
 import dataInputAndValidity as di
 import gameLife as gl
+import output as op
 
 backupInterval = 5	#Value is in days
 userDeclinedBackup = [False]	#Editable within function
@@ -58,15 +59,17 @@ def noOpenSessions():
 #If openSessions == 1, take input to close it
 def oneOpenSession(rows):
 	rowId = rows[0]['id']
-	row = rows[0]
-	openSession = track.printOpenSession(row)
+	name = rows[0]['name']
+
+	print('Open session: ')
+	op.printOutput(rows)
 	choice = track.inputEnd(rowId)
 	track.checkDuration()
 	track.listSpecificSessions([rowId])
 
 	#If session is closed in any manner, lastPlayed is updated
 	if choice == 'close' or choice == 'input':
-		gl.checkLife(openSession['name'])
+		gl.checkLife(name)
 
 #If openSessions > 1, take input for repair choice, then repair
 def manyOpenSessions(rows):
@@ -92,5 +95,3 @@ if __name__ == '__main__':
 			oneOpenSession(rows)
 		elif openSessions > 1:
 			manyOpenSessions(rows)
-#TODO: Make standard the positioning of the call to tf for converting string type to datetime type
-#TODO: Make rowId inputs be int

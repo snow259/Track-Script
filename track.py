@@ -21,25 +21,9 @@ def checkSession():
 
 	return rows
 
-def printOpenSession(row, repair = False):
-	rowId = row['id']
-	game = row['name']
-	startTime = row['startTime']
-	openSession = {'id': rowId, 'name': game, 'startTime': startTime}
-
-	if repair == False:
-		outString = 'Open session:\n' + str(game) + ' ' + str(startTime)
-	elif repair == True:
-		outString = str(rowId) + ' ' + str(game) + ' ' + str(startTime)
-
-	print(outString)
-
-	return openSession
-
 def multipleSessionRepairChoice(rows):
 	print('Multiple open sessions found:')
-	for row in rows:
-		printOpenSession(row, repair = True)
+	op.printOutput(rows)
 
 	repairOption = ''
 	while repairOption != 'close' and repairOption != 'delete':

@@ -63,7 +63,6 @@ def findLife(life, rows):
 	return life
 
 #Writes all game life to table.
-#TODO: reuse function for updating
 def writeNewLife(life):
 	for game in life:
 		name = game
