@@ -12,7 +12,7 @@ def createDataBase():
 	if databaseName not in dirList:
 		database = sqlite3.connect(databasePath)
 		cursor = database.cursor()
-		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, date TIMESTAMP, duration TEXT)')
+		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, date TIMESTAMP, duration TIMESTAMP)')
 		database.close()
 
 def writeSession(row):

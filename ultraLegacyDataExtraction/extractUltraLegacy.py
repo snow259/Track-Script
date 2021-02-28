@@ -7,8 +7,6 @@ filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
 dirList = os.listdir(fileDirectory)
 
-print(fileDirectory, dirList)
-
 databaseName = 'legacyData.db'
 databasePath = fileDirectory + '\\' + databaseName
 
@@ -33,7 +31,7 @@ def returnYM(file):
 	year, month = file.split('-')
 	month, _ = month.split('.')
 
-	return year, month
+	return int(year), int(month)
 
 def gameRows(game, df):
 	rows = df.loc[df[game].notna(), ('Date', game)]
@@ -41,6 +39,12 @@ def gameRows(game, df):
 	rows.drop(columns = 'index', inplace = True)
 
 	return rows
+
+def convertDuration(duration):
+	duration = dt.datetime.strptime(duration, '%Hh %Mm')
+	duration = dt.timedelta(days = duration.day - 1, hours = duration.hour, minutes = duration.minute)
+
+	return str(duration)
 
 def main():
 	dbf.createDataBase()
@@ -58,7 +62,12 @@ def main():
 
 		for game in games:
 			rows = gameRows(game, df)
-			print(rows)
+			for i in range(rows.shape[0]):
+				gameRow = rows.loc[i, ['Date', game]]
+				startDate = dt.datetime(year = year, month = month, day = gameRow['Date'])
+				duration = convertDuration(gameRow[game])
+				row = {'name': game, 'startTime': startDate, 'duration': duration}
+				dbf.writeSession(row)
 
 		writeEnd = dt.datetime.now()
 		writeDuration = writeEnd - writeStart
