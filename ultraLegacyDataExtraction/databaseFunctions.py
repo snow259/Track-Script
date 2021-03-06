@@ -12,16 +12,17 @@ def createDataBase():
 	if databaseName not in dirList:
 		database = sqlite3.connect(databasePath)
 		cursor = database.cursor()
-		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, date TIMESTAMP, duration TIMESTAMP)')
+		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TIMESTAMP)')
 		database.close()
 
 def writeSession(row):
-	writeSessionString = 'INSERT INTO Games VALUES(?, ?, ?, ?)'
+	writeSessionString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
 	rowId = None
 	name = row['name']
-	date = row['startTime']
+	startTime = row['startTime']
+	endTime = row['endTime']
 	duration = row['duration']
-	argument = (rowId, name, date, duration)
+	argument = (rowId, name, startTime, endTime, duration)
 	executeWrite(databasePath, writeSessionString, argument, 'writeSession()')
 
 def executeWrite(databasePath, commandString, argument, functionName):

@@ -44,7 +44,7 @@ def convertDuration(duration):
 	duration = dt.datetime.strptime(duration, '%Hh %Mm')
 	duration = dt.timedelta(days = duration.day - 1, hours = duration.hour, minutes = duration.minute)
 
-	return str(duration)
+	return duration
 
 def main():
 	dbf.createDataBase()
@@ -64,9 +64,10 @@ def main():
 			rows = gameRows(game, df)
 			for i in range(rows.shape[0]):
 				gameRow = rows.loc[i, ['Date', game]]
-				startDate = dt.datetime(year = year, month = month, day = gameRow['Date'])
+				startTime = dt.datetime(year = year, month = month, day = gameRow['Date'])
 				duration = convertDuration(gameRow[game])
-				row = {'name': game, 'startTime': startDate, 'duration': duration}
+				endTime = startTime + duration
+				row = {'name': game, 'startTime': startTime, 'endTime': endTime, 'duration': str(duration)}
 				dbf.writeSession(row)
 
 		writeEnd = dt.datetime.now()
