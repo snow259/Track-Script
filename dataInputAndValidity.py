@@ -97,11 +97,12 @@ def keyInput(keyList, inputString):
 	if inputString == None:
 		inputString = generateKeyInputString(keyList)
 
-	keyList.append('/cancel')
 	validKey = False
 	while validKey == False:
 		key = input(inputString)
-		if keyList.count(key) == 1:
+		if key in keyList:
+			validKey = True
+		elif key == '/cancel':
 			validKey = True
 
 	return key

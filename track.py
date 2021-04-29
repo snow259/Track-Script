@@ -51,8 +51,7 @@ def calculateDuration(rowId):
 def userInput():
 	inputString = input('\nEnter game: ')
 	inputString = inputString.strip()
-	dateAndTimeRaw = dt.datetime.now()
-	gameTime = tf.processDateTime(dateAndTimeRaw)
+	gameTime = tf.processDateTime(dt.datetime.now())
 
 	return inputString, gameTime
 
@@ -60,20 +59,27 @@ def writeStart(inputString, gameTime):
 	dataops.writeSession(None, inputString, gameTime, None, None)
 
 def inputEnd(rowId):
-	choiceList = ['close', 'delete', 'input']
+	choiceList = ['close', 'restart', 'input', 'delete']
+
 	choiceString = None
 	choice = di.keyInput(choiceList, choiceString)
-	endTime = tf.roundTime(dt.datetime.now())
-	endTime = tf.removeSeconds(endTime)
+	endTime = tf.processDateTime(dt.datetime.now())
 
 	if choice == 'close':
 		dataops.closeSession(endTime)
-	elif choice == 'delete':
-		deleteSession(rowId)
+
+	elif choice == 'restart':
+		startTime = tf.processDateTime(dt.datetime.now())
+		key = 'startTime'
+		dataops.modifySession(rowId, key, startTime)
+
 	elif choice == 'input':
 		endTime = userInputEndTime()
 		if endTime == '/cancel':
 			choice = '/cancel'
+
+	elif choice == 'delete':
+		deleteSession(rowId)
 
 	return choice
 
