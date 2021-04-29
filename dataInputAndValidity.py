@@ -116,6 +116,19 @@ def generateKeyInputString(keyList):
 
 	return inputString
 
+#Takes yes/no inputs
+def ynChoiceInput(inputString):
+	validChoice = False
+	while validChoice == False:
+		choice = input(inputString + ' (y/n): ')
+		if choice in ['y', 'n']:
+			validChoice = True
+
+	if choice == 'y':
+		return True
+	elif choice == 'n':
+		return False
+
 def nameInput():
 	pass
 

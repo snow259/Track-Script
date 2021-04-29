@@ -11,10 +11,11 @@ def backup():
 	#Checks if user wants to perform backup before performing it. Does not ask user to backup until reopening script if declined
 	mustBackup = track.backup(backupInterval)
 	if mustBackup == True and userDeclinedBackup[0] == False:
-		userBackupChoice = input('It has been more than ' + str(backupInterval) + ' days since last backup. Run backup? (y/n)\n')
-		if userBackupChoice == 'y':
+		userBackupChoice = di.ynChoiceInput('It has been more than ' + str(backupInterval) + ' days since last backup. Run backup?')
+		if userBackupChoice:
 			runBackup()
 		else:
+			print('Backup deferred')
 			userDeclinedBackup[0] = True
 
 #If user agrees to backup, backup is attempted

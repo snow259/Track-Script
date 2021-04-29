@@ -49,7 +49,7 @@ def calculateDuration(rowId):
 
 #Takes input from user, reads current time
 def userInput():
-	inputString = input('Enter game: ')
+	inputString = input('\nEnter game: ')
 	inputString = inputString.strip()
 	dateAndTimeRaw = dt.datetime.now()
 	gameTime = tf.processDateTime(dateAndTimeRaw)
@@ -82,9 +82,9 @@ def userInputEndTime(rowId = None):
 	while inputCorrect == False:
 		userEndTime = di.timeInput(None, 'Enter end time in format: YYYY-MM-DD HH:MM:SS\n', 'endTime')
 		if userEndTime != '/cancel':
-			isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory? (y/n)\n'
-			isThisRight = input(isThisRightString)
-			if isThisRight == 'y':
+			isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory?'
+			isThisRight = di.ynChoiceInput(isThisRightString)
+			if isThisRight:
 				inputCorrect = True
 		else:
 			return '/cancel'
@@ -173,8 +173,8 @@ def deleteSession(rowId = None):
 				
 			print('The following sessions will be deleted: ')
 			listSpecificSessions(rowIds)
-			proceed = input('Proceed? (y/n)\n')
-			if proceed == 'y':
+			proceed = di.ynChoiceInput('Proceed?')
+			if proceed:
 				for rowId in rowIds:
 					dataops.deleteSession(rowId)
 				return rowIds
