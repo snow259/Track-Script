@@ -4,7 +4,7 @@ import timeFunctions as tf
 #Takes inputs starting with '/', and splits it into command and args. Arguments must be comma seperated
 def processCommand(inputString):
 	inputString = inputString.lstrip('/')
-	inputstring = inputString.strip()
+	inputString = inputString.strip()
 
 	command, *arguments = inputString.split(' ', 1)
 	if len(arguments) == 0:
