@@ -1,14 +1,16 @@
 from itertools import count
 
-#Tab length 4 is used in editors, 8 appears to be used in console
+# Tab length 4 is used in editors, 8 appears to be used in console
 tabLength = 8
+
 
 def printOutput(rows):
 	keysList = rows[0].keys()
-	#Following three functions are key agnostic, comment line within is an example of how the variable will look like when working with a complete row from Games table
+	# Following three functions are key agnostic, comment line within is an example of how the variable will look like when working with a complete row from Games table
 	unpacked = unpack(keysList, rows)
 	maxLengths = valueMaxLengths(keysList, unpacked)
 	printStrings(keysList, unpacked, maxLengths)
+
 
 def unpack(keysList, rows):
 	# unpacked = {'id': [], 'name': [], 'startTime': [], 'endTime': [], 'duration': []}
@@ -22,13 +24,14 @@ def unpack(keysList, rows):
 
 	return unpacked
 
+
 def valueMaxLengths(keysList, unpacked):
 	# maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
 	maxLengths = {}
 	for key in keysList:
 		maxLengths[key] = 0
 
-	#For each value under a key, check if the length is greater than value in maxLengths
+	# For each value under a key, check if the length is greater than value in maxLengths
 	for key in unpacked:
 		for value in unpacked[key]:
 			if len(str(value)) > maxLengths[key]:
@@ -37,8 +40,9 @@ def valueMaxLengths(keysList, unpacked):
 
 	return maxLengths
 
+
 def printStrings(keysList, unpacked, maxLengths):
-	#Print top row
+	# Print top row
 	# stringElements = {'id': '', 'name': '', 'startTime': '', 'endTime': '', 'duration': ''}
 	stringElements = {}
 	for key in keysList:
@@ -49,7 +53,7 @@ def printStrings(keysList, unpacked, maxLengths):
 	outString = makeString(stringElements, maxLengths)
 	print(outString)
 
-	#Print remaining rows
+	# Print remaining rows
 	iteration = count()
 	iterate = True
 	while iterate == True:
@@ -63,13 +67,14 @@ def printStrings(keysList, unpacked, maxLengths):
 		outString = makeString(stringElements, maxLengths)
 		print(outString)
 
+
 def makeString(stringElements, maxLengths):
-	tab = '	'	#Tab, not space
+	tab = '	'		# Tab, not space
 	outString = ''
 	for key in stringElements:
 		element = str(stringElements[key])
 		elementLength = len(element)
-		elementTabLength = -(-elementLength // tabLength)	#Upsidedown floor division becomes ceiling division
+		elementTabLength = -(-elementLength // tabLength)		# Upsidedown floor division becomes ceiling division
 		elementTabLengthRemainder = elementLength % tabLength
 
 		maxLength = maxLengths[key]
@@ -77,18 +82,18 @@ def makeString(stringElements, maxLengths):
 		maxTabLengthRemainder = maxLength % tabLength
 
 		outString = outString + str(element) + tab
-		
-		#To determine number of additional tabs to be added after an element
-		tabsRequired =  maxTabLength - elementTabLength
+
+		# To determine number of additional tabs to be added after an element
+		tabsRequired = maxTabLength - elementTabLength
 		tabCorrection = 0
-		#If remainder == 0, the tab added after this element will form an entirely new tab space
+		# If remainder == 0, the tab added after this element will form an entirely new tab space
 		if elementTabLengthRemainder == 0:
 			tabCorrection -= 1
-		#If remainer == 0, the tab added after the element with max length will form an entirely new tab space
-		#If remainder == 3, the gap between the two columns is too short, like with startTime and endTime, not needed with tab length 8 like in the console
+		# If remainer == 0, the tab added after the element with max length will form an entirely new tab space
+		# If remainder == 3, the gap between the two columns is too short, like with startTime and endTime, not needed with tab length 8 like in the console
 		if maxTabLengthRemainder == 0:
 			tabCorrection += 1
-		#Checks if current element is the one with max length and zeroes out the additional tabs after
+		# Checks if current element is the one with max length and zeroes out the additional tabs after
 		if maxTabLength == elementTabLength:
 			tabsRequired = 0
 

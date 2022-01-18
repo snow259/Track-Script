@@ -1,7 +1,8 @@
 import random
 
+
 def randomGame(argument):
-	if argument == None:
+	if argument is None:
 		randomChoice = randomPastGame(5)
 		print(randomChoice)
 	else:
@@ -18,7 +19,7 @@ def randomGame(argument):
 			randomChoice = random.choice(argument)
 			print(randomChoice)
 
-#Pick game randomly from a game played in last five days
+
+# Pick game randomly from a game played in last five days
 def randomPastGame(days):
 	print(days)
-	

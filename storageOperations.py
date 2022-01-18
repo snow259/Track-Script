@@ -1,9 +1,8 @@
 import sqlite3
 import os
-import datetime as dt
 
-#All paths used
-#filePath is path to this file, its directory is fileDirectory
+# All paths used
+# filePath is path to this file, its directory is fileDirectory
 filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
 dataDirectory = fileDirectory + '\\Data'
@@ -11,17 +10,18 @@ backupDirectory = fileDirectory + '\\Backup'
 databasePath = dataDirectory + '\\mainDatabase.db'
 archivePath = dataDirectory + '\\archiveDatabase.db'
 
-#Uses vacuum into to create a backup
+
+# Uses vacuum into to create a backup
 def backupMain(mainBackupPath):
 	backupMainString = 'VACUUM INTO ' + mainBackupPath
 	database = sqlite3.connect(databasePath)
-	cursor = database.cursor()
 	try:
 		database.execute(backupMainString)
 	finally:
 		database.close()
 
-#Uses vacuum into to create a backup
+
+# Uses vacuum into to create a backup
 def backupArchive(archiveBackupPath):
 	backupArchiveString = 'VACUUM INTO ' + archiveBackupPath
 	archive = sqlite3.connect(archivePath)
@@ -31,7 +31,8 @@ def backupArchive(archiveBackupPath):
 	finally:
 		archive.close()
 
-#Appends mainDatabase into archiveDatabase
+
+# Appends mainDatabase into archiveDatabase
 def archive():
 	attachString = 'ATTACH ' + '"' + databasePath + '" AS mainDatabase'
 	detachString = 'DETACH DATABASE mainDatabase'
@@ -54,6 +55,7 @@ def archive():
 		cursor.execute(detachString)
 		conn.close()
 
+
 def checkForBackupDirectories():
 	dirList = os.listdir(fileDirectory)
 	if dirList.count('Backup') == 0:
@@ -63,6 +65,7 @@ def checkForBackupDirectories():
 		os.mkdir(mainBackupDirectory)
 		os.mkdir(archiveBackupDirectory)
 
+
 def checkForArchive():
 	dirList = os.listdir(dataDirectory)
 	if dirList.count('archiveDatabase.db') == 0:
@@ -70,6 +73,7 @@ def checkForArchive():
 		cursor = archive.cursor()
 		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TEXT)')
 		archive.close()
+
 
 checkForBackupDirectories()
 checkForArchive()

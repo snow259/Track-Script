@@ -4,13 +4,15 @@ import dataInputAndValidity as di
 import gameLife as gl
 import output as op
 
-backupInterval = 5	#Value is in days
-userDeclinedBackup = [False]	#Editable within function
-#Checks if backup is required, then asks user if backup can be performed
+backupInterval = 5		# Value is in days
+userDeclinedBackup = [False]		# Editable within function
+
+
+# Checks if backup is required, then asks user if backup can be performed
 def backup():
-	#Checks if user wants to perform backup before performing it. Does not ask user to backup until reopening script if declined
+	# Checks if user wants to perform backup before performing it. Does not ask user to backup until reopening script if declined
 	mustBackup = track.backup(backupInterval)
-	if mustBackup == True and userDeclinedBackup[0] == False:
+	if mustBackup is True and userDeclinedBackup[0] is False:
 		userBackupChoice = di.ynChoiceInput('\nIt has been more than ' + str(backupInterval) + ' days since last backup. Run backup?')
 		if userBackupChoice:
 			runBackup()
@@ -18,7 +20,8 @@ def backup():
 			print('Backup deferred')
 			userDeclinedBackup[0] = True
 
-#If user agrees to backup, backup is attempted
+
+# If user agrees to backup, backup is attempted
 def runBackup():
 	try:
 		track.runBackupOperations()
@@ -29,7 +32,8 @@ def runBackup():
 		print('Backup successfully completed')
 		track.listSessions()
 
-#If openSessions == 0, compute durations if missing, then take input
+
+# If openSessions == 0, compute durations if missing, then take input
 def noOpenSessions():
 	track.checkDuration()
 
@@ -52,12 +56,13 @@ def noOpenSessions():
 		elif command == 'exit':
 			loop[0] = False
 	elif len(inputString) == 0:
-		#Stripped blank inputs have length 0
+		# Stripped blank inputs have length 0
 		pass
 	else:
 		track.writeStart(inputString, gameTime)
 
-#If openSessions == 1, take input to close it
+
+# If openSessions == 1, take input to close it
 def oneOpenSession(rows):
 	rowId = rows[0]['id']
 	name = rows[0]['name']
@@ -67,28 +72,30 @@ def oneOpenSession(rows):
 	choice = track.inputEnd(rowId)
 	track.checkDuration()
 
-	#If session is closed in any manner, lastPlayed is updated
+	# If session is closed in any manner, lastPlayed is updated
 	if choice in ['close', 'input']:
 		track.listSpecificSessions([rowId])
 		gl.checkLife(name)
 
-#If openSessions > 1, take input for repair choice, then repair
+
+# If openSessions > 1, take input for repair choice, then repair
 def manyOpenSessions(rows):
 	repairOption = track.multipleSessionRepairChoice(rows)
 
 	if repairOption == 'close':
-		rowId = di.rowIdInput('Enter id of session to close\n', multipleRowIds = False)
+		rowId = di.rowIdInput('Enter id of session to close\n', multipleRowIds=False)
 		track.userInputEndTime(rowId)
 	elif repairOption == 'delete':
 		track.deleteSession()
 
+
 if __name__ == '__main__':
-	loop = [True]	#Editable from within functions
+	loop = [True]		# Editable from within functions
 	track.listSessions()
-	while loop[0] == True:
+	while loop[0] is True:
 		rows = track.checkSession()
 		openSessions = len(rows)
-		
+
 		if openSessions == 0:
 			backup()
 			noOpenSessions()

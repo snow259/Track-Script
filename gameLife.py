@@ -1,7 +1,8 @@
 import databaseOperations as dataops
 import timeFunctions as tf
 
-#Checks if table GameLife exists. Creates it if it doesn't. This is done on import
+
+# Checks if table GameLife exists. Creates it if it doesn't. This is done on import
 def checkForTables():
 	tables = dataops.returnTablesList()
 
@@ -9,7 +10,8 @@ def checkForTables():
 		dataops.createGameLifeTable()
 		populateGameLife()
 
-#If table was just created, function fills it with all existing game lives.
+
+# If table was just created, function fills it with all existing game lives.
 def populateGameLife():
 	mainDatabaseRows = dataops.returnDatabaseContents()
 	archiveRows = dataops.returnArchiveContents()
@@ -23,7 +25,8 @@ def populateGameLife():
 
 	writeNewLife(life)
 
-#Finds all game names from provided rows and appends them to the life dictionary if it is not found in it
+
+# Finds all game names from provided rows and appends them to the life dictionary if it is not found in it
 def populateNames(life, rows):
 	for row in rows:
 		name = row['name']
@@ -32,8 +35,9 @@ def populateNames(life, rows):
 
 	return life
 
-#Replaces None with datetime, if not none replaces lastPlayedTime with endTime if endTime is more recent
-#dateime > datetime implies the numbers in the first datetime are larger, which will be due to it being more recent
+
+# Replaces None with datetime, if not none replaces lastPlayedTime with endTime if endTime is more recent
+# dateime > datetime implies the numbers in the first datetime are larger, which will be due to it being more recent
 def findLife(life, rows):
 	for row in rows:
 		name = row['name']
@@ -62,7 +66,8 @@ def findLife(life, rows):
 
 	return life
 
-#Writes all game life to table.
+
+# Writes all game life to table.
 def writeNewLife(life):
 	for game in life:
 		name = game
@@ -70,7 +75,8 @@ def writeNewLife(life):
 		lastPlayed = life[game]['lastPlayed']
 		dataops.addGameToGameLifeTable(name, firstPlayed, lastPlayed)
 
-#Converts life from sqlite3.Row objects to dictionary
+
+# Converts life from sqlite3.Row objects to dictionary
 def convertLifeRows(life):
 	convertedLife = {}
 	for i in range(len(life)):
@@ -83,6 +89,7 @@ def convertLifeRows(life):
 
 	return convertedLife
 
+
 def checkLife(name):
 	life = dataops.returnGameLife()
 	life = convertLifeRows(life)
@@ -90,11 +97,11 @@ def checkLife(name):
 	gameRowsMain = dataops.returnGameMain(name)
 	gameRowsArchive = dataops.returnGameArchive(name)
 
-	#Checks if name is missing from sessions
+	# Checks if name is missing from sessions
 	if len(gameRowsMain) == len(gameRowsArchive) == 0:
 		dataops.deleteGameLife(name)
 
-	#If present, updates life
+	# If present, updates life
 	else:
 		updatedLife = {}
 		updatedLife[name] = {'firstPlayed': None, 'lastPlayed': None}
@@ -102,15 +109,16 @@ def checkLife(name):
 		updatedLife = findLife(updatedLife, gameRowsMain)
 		updatedLife = findLife(updatedLife, gameRowsArchive)
 
-		#Checks if name is a new game
+		# Checks if name is a new game
 		if name not in life:
 			writeNewLife(updatedLife)
 
-		#If not a new game
+		# If not a new game
 		else:
 			firstPlayed = updatedLife[name]['firstPlayed']
 			lastPlayed = updatedLife[name]['lastPlayed']
 			dataops.updateGameLife(name, 'firstPlayed', firstPlayed)
 			dataops.updateGameLife(name, 'lastPlayed', lastPlayed)
+
 
 checkForTables()
