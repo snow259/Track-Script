@@ -100,6 +100,7 @@ def keyInput(keyList, inputString):
 	validKey = False
 	while validKey == False:
 		key = input(inputString)
+		key = key.strip()
 		if key in keyList:
 			validKey = True
 		elif key == '/cancel':
