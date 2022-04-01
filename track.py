@@ -5,6 +5,7 @@ import storageOperations as storeops
 import timeFunctions as tf
 import dataInputAndValidity as di
 import output as op
+import commands as cmd
 
 # All paths used
 # filePath is path to this file, its directory is fileDirectory
@@ -115,10 +116,13 @@ def userInputEndTime(rowId=None):
 
 
 # Prints sessions into console, all if no input is given, listed rowIds elsewise
+# If no rows present, prints that out, followed by recent games
 def listSessions():
 	rows = dataops.returnDatabaseContents()
 	if len(rows) == 0:
 		print('No sessions found in database')
+		arguments = None
+		cmd.recentCommand(arguments)
 	if len(rows) > 0:
 		op.printOutput(rows)
 		return rows

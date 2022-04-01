@@ -130,6 +130,14 @@ def returnGameLife():
 	return rows
 
 
+def returnGameLifeSorted():
+	returnGameLifeSortedString = 'SELECT id, name, lastPlayed FROM GameLife ORDER BY lastPlayed DESC'
+	argument = None
+	rows = executeRead(databasePath, returnGameLifeSortedString, argument, 'returnGameLifeSorted()')
+
+	return rows
+
+
 # Writes session to database
 def writeSession(rowId, name, startTime, endTime, duration):
 	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'

@@ -53,6 +53,8 @@ def noOpenSessions():
 			cmd.randomCommand(argument)
 		elif command == 'gamelife':
 			cmd.gamelifeCommand(argument)
+		elif command == 'recent':
+			cmd.recentCommand(argument)
 		elif command == 'exit':
 			loop[0] = False
 	elif len(inputString) == 0:

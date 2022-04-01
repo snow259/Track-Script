@@ -56,7 +56,7 @@ def printStrings(keysList, unpacked, maxLengths):
 	# Print remaining rows
 	iteration = count()
 	iterate = True
-	while iterate == True:
+	while iterate is True:
 		i = next(iteration)
 		numberOfValues = len(unpacked['id'])
 		if numberOfValues == i + 1:

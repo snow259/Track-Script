@@ -1,5 +1,7 @@
 import track
 import randomChoice as rc
+import databaseOperations as dataops
+import output as op
 import gameLife as gl
 # All command related functions were split off here due to growing complexity caused by gameLife
 
@@ -44,6 +46,15 @@ def listCommand(argument):
 
 def randomCommand(argument):
 	rc.randomGame(argument)
+
+
+# Prints out the last numberOfRecntGames games played
+def recentCommand(argument):
+	numberOfRecentGames = 5
+	gameLifeSorted = dataops.returnGameLifeSorted()
+
+	print('\nLast ' + str(numberOfRecentGames) + ' games played:')
+	op.printOutput(gameLifeSorted[:numberOfRecentGames])
 
 
 def gamelifeCommand(argument):
