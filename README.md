@@ -104,6 +104,14 @@ A game can be randomly chosen from a list provided. The list provided should be 
 /random game one, game two, game three
 ```
 
+### Recent
+
+The most recently played games (default 5) can be printed out.
+
+```
+/recent
+```
+
 The Databases
 =============
 
