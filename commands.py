@@ -50,10 +50,23 @@ def randomCommand(argument):
 
 # Prints out the last numberOfRecntGames games played
 def recentCommand(argument):
-	numberOfRecentGames = 5
+	# Defaults to last 5 if no argument is provided or if argument cannot be converted to int
+	if argument is None:
+		numberOfRecentGames = 5
+	else:
+		try:
+			numberOfRecentGames = int(argument[0])
+		except Exception:
+			numberOfRecentGames = 5
+
 	gameLifeSorted = dataops.returnGameLifeSorted()
 
+	# If there aren't enough games played, print all games played in order
+	if numberOfRecentGames > len(gameLifeSorted):
+		numberOfRecentGames = len(gameLifeSorted)
+
 	print('\nLast ' + str(numberOfRecentGames) + ' games played:')
+
 	op.printOutput(gameLifeSorted[:numberOfRecentGames])
 
 

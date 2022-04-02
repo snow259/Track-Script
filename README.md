@@ -112,6 +112,12 @@ The most recently played games (default 5) can be printed out.
 /recent
 ```
 
+If more or less recently played games are needed, an integer can also be added to the command. The following prints the last 10 games played, or all games played if there aren't that many:
+
+```
+/recent 10
+```
+
 The Databases
 =============
 
