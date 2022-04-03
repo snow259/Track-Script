@@ -104,6 +104,16 @@ A game can be randomly chosen from a list provided. The list provided should be 
 /random game one, game two, game three
 ```
 
+If no list of games are provided, one will be randomly chosen from the past five last played games.
+
+If a single argument of an integer n is provided, a game will be randomly chosen from the last n games.
+
+```
+/random 6
+```
+
+If the provided integer is larger than the number of games played, one will be randomly chosen from any of the last played games.
+
 ### Recent
 
 The most recently played games (default 5) can be printed out.

@@ -52,13 +52,13 @@ def findLife(life, rows):
 				lastPlayedTime = life[gameName]['lastPlayed']
 				firstPlayedTime = life[gameName]['firstPlayed']
 
-				if lastPlayedTime == None:
+				if lastPlayedTime is None:
 					life[gameName]['lastPlayed'] = endTime
 				else:
 					if endTime > lastPlayedTime:
 						life[gameName]['lastPlayed'] = endTime
 
-				if firstPlayedTime == None:
+				if firstPlayedTime is None:
 					life[gameName]['firstPlayed'] = startTime
 				else:
 					if startTime < firstPlayedTime:
