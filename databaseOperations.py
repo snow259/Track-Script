@@ -234,8 +234,6 @@ def executeRead(databasePath, commandString, argument, functionName):
 	finally:
 		database.close()
 
-	return rows
-
 
 # Called by all functions that modify the database
 def executeWrite(databasePath, commandString, argument, functionName):
