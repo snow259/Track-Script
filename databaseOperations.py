@@ -142,76 +142,76 @@ def returnGameLifeSorted():
 def writeSession(rowId, name, startTime, endTime, duration):
 	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
 	argument = (rowId, name, startTime, endTime, duration)
-	executeWrite(databasePath, insertString, argument, 'writeSession()')
+	executeWrite(databasePath, [insertString], [argument], 'writeSession()')
 
 
 # Closes session in database
 def closeSession(endTime):
 	closeString = 'UPDATE Games SET endTime = ? WHERE endTime IS NULL'
 	argument = (endTime, )
-	executeWrite(databasePath, closeString, argument, 'closeSession()')
+	executeWrite(databasePath, [closeString], [argument], 'closeSession()')
 
 
 # Deletes specified sessions
 def deleteSession(rowId):
 	deleteString = 'DELETE FROM Games WHERE id IS ?'
 	argument = (rowId, )
-	executeWrite(databasePath, deleteString, argument, 'deleteSession()')
+	executeWrite(databasePath, [deleteString], [argument], 'deleteSession()')
 
 
 # Writes the duration of a session
 def writeDuration(rowId, duration):
 	writeDurationString = 'UPDATE Games SET duration = ? WHERE id IS ?'
 	argument = (duration, rowId)
-	executeWrite(databasePath, writeDurationString, argument, 'writeDuration()')
+	executeWrite(databasePath, [writeDurationString], [argument], 'writeDuration()')
 
 
 # Allows editing of the name, start, and end times of a session. Duration is recomputed after, in track.py
 def modifySession(rowId, key, value):
 	modifySessionString = 'UPDATE Games SET ' + key + ' = ? WHERE id IS ?'
 	argument = (value, int(rowId))
-	executeWrite(databasePath, modifySessionString, argument, 'modifySession()')
+	executeWrite(databasePath, [modifySessionString], [argument], 'modifySession()')
 
 
 # Deletes all sessions from database, done during backup
 def deleteAllMain():
 	deleteAllMainString = 'DELETE FROM Games'
 	argument = None
-	executeWrite(databasePath, deleteAllMainString, argument, 'deleteAllMain()')
+	executeWrite(databasePath, [deleteAllMainString], [argument], 'deleteAllMain()')
 
 
 # Vacuums database into another location to serve as backup
 def vacuumMain():
 	vacuumMainString = 'VACUUM'
 	argument = None
-	executeWrite(databasePath, vacuumMainString, argument, 'vacuumMain()')
+	executeWrite(databasePath, [vacuumMainString], [argument], 'vacuumMain()')
 
 
 # Creates the table GameLife to store all game lives
 def createGameLifeTable():
 	createLastPlayedTableString = 'CREATE TABLE GameLife (id INTEGER PRIMARY KEY, name TEXT NOT NULL, firstPlayed TIMESTAMP, lastPlayed TIMESTAMP)'
 	argument = None
-	executeWrite(databasePath, createLastPlayedTableString, argument, 'createGameLifeTable()')
+	executeWrite(databasePath, [createLastPlayedTableString], [argument], 'createGameLifeTable()')
 
 
 # Adds new game to the table
 def addGameToGameLifeTable(name, firstPlayed, lastPlayed):
 	addGameLastPlayedTableString = 'INSERT INTO GameLife VALUES(?, ?, ?, ?)'
 	argument = (None, name, firstPlayed, lastPlayed)
-	executeWrite(databasePath, addGameLastPlayedTableString, argument, 'addGameToGameLifeTable()')
+	executeWrite(databasePath, [addGameLastPlayedTableString], [argument], 'addGameToGameLifeTable()')
 
 
 # Edits existing game life
 def updateGameLife(name, key, value):
 	updateLastPlayedString = 'UPDATE GameLife SET ' + key + ' = ? WHERE name IS ?'
 	argument = (value, name)
-	executeWrite(databasePath, updateLastPlayedString, argument, 'updateGameLife()')
+	executeWrite(databasePath, [updateLastPlayedString], [argument], 'updateGameLife()')
 
 
 def deleteGameLife(name):
 	deleteGameLifeString = 'DELETE FROM GameLife WHERE name IS ?'
 	argument = (name, )
-	executeWrite(databasePath, deleteGameLifeString, argument, 'deleteGameLife()')
+	executeWrite(databasePath, [deleteGameLifeString], [argument], 'deleteGameLife()')
 
 
 # Called by all functions that read the database and return a variable
@@ -236,14 +236,15 @@ def executeRead(databasePath, commandString, argument, functionName):
 
 
 # Called by all functions that modify the database
-def executeWrite(databasePath, commandString, argument, functionName):
+def executeWrite(databasePath, commandStrings, arguments, functionName):
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
 	try:
-		if argument is None:
-			cursor.execute(commandString)
-		else:
-			cursor.execute(commandString, argument)
+		for commandString, argument in zip(commandStrings, arguments):
+			if argument is None:
+				cursor.execute(commandString)
+			else:
+				cursor.execute(commandString, argument)
 	except Exception as e:
 		print('Error in ' + str(functionName))
 		print(e)
