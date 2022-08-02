@@ -104,7 +104,7 @@ def returnArchiveContents():
 	return rows
 
 
-# Returns rows from main database containing specified game
+# Return rows from main database containing specified game
 def returnGameMain(name):
 	returnGameMainString = 'SELECT * FROM Games WHERE name IS ?'
 	argument = (name,)
@@ -113,7 +113,7 @@ def returnGameMain(name):
 	return rows
 
 
-# Returns rows from archive database containing specified game
+# Return rows from archive database containing specified game
 def returnGameArchive(name):
 	returnGameArchiveString = 'SELECT * FROM Games WHERE name IS ?'
 	argument = (name,)

@@ -48,7 +48,7 @@ def randomCommand(argument):
 	rc.randomGame(argument)
 
 
-# Prints out the last numberOfRecntGames games played
+# Prints out the last numberOfRecentGames games played
 def recentCommand(argument):
 	# Defaults to last 5 if no argument is provided or if argument cannot be converted to int
 	if argument is None:

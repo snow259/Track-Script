@@ -103,8 +103,7 @@ def checkLife(name):
 
 	# If present, updates life
 	else:
-		updatedLife = {}
-		updatedLife[name] = {'firstPlayed': None, 'lastPlayed': None}
+		updatedLife = {name: {'firstPlayed': None, 'lastPlayed': None}}
 
 		updatedLife = findLife(updatedLife, gameRowsMain)
 		updatedLife = findLife(updatedLife, gameRowsArchive)

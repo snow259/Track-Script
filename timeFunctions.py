@@ -27,7 +27,7 @@ def processDateTimeString(dateTimeString):
 	return dateTime
 
 
-# Rounds time to nearest minute, second is not used elsewhere in code
+# Rounds time to the nearest minute, second is not used elsewhere in code
 def roundTime(dateAndTimeRaw):
 	inputType = str(type(dateAndTimeRaw))
 	if 'str' in inputType:

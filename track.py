@@ -115,7 +115,7 @@ def userInputEndTime(rowId=None):
 			dataops.modifySession(rowId, key, endTime)
 
 
-# Prints sessions into console, all if no input is given, listed rowIds elsewise
+# Prints all sessions into console
 # If no rows present, prints that out, followed by recent games
 def listSessions():
 	rows = dataops.returnDatabaseContents()
@@ -183,6 +183,7 @@ def editSession():
 
 				return rowId, key, value
 
+
 # If rowId is none, user input is taken. If it is not none, specified row is deleted
 def deleteSession(rowId=None):
 	if rowId is None:
@@ -225,7 +226,7 @@ def backup(backupInterval):
 	return mustBackup
 
 
-# Runs functions to back up archiveDatabase, archive contents of mainDatabase, then backup it too
+# Run functions to back up archiveDatabase, archive contents of mainDatabase, then backup it too
 def runBackupOperations():
 	backupMainPath = generateBackupPath('Main')
 	backupArchivePath = generateBackupPath('Archive')
