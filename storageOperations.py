@@ -34,16 +34,15 @@ def backupArchive(archiveBackupPath):
 
 # Appends mainDatabase into archiveDatabase
 def archive():
-	attachString = 'ATTACH ' + '"' + databasePath + '" AS mainDatabase'
+	attachString = 'ATTACH ? AS mainDatabase'
+	attachArgument = (databasePath,)
+	insertGameString = 'INSERT INTO Games(name, startTime, endTime, duration) SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
 	detachString = 'DETACH DATABASE mainDatabase'
-	selectString = 'SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
-	insertString = 'INSERT INTO Games(name, startTime, endTime, duration) SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
 	conn = sqlite3.connect(archivePath)
 	cursor = conn.cursor()
 	try:
-		cursor.execute(attachString)
-		cursor.execute(selectString)
-		cursor.execute(insertString)
+		cursor.execute(attachString, attachArgument)
+		cursor.execute(insertGameString)
 	except Exception as e:
 		print('Error in archive()')
 		print(e)
