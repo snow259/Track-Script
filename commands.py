@@ -56,7 +56,8 @@ def recentCommand(argument):
 	else:
 		try:
 			numberOfRecentGames = int(argument[0])
-		except Exception:
+		except ValueError:
+			print('Invalid integer, using defaults')
 			numberOfRecentGames = 5
 
 	gameLifeSorted = dataops.returnGameLifeSorted()
