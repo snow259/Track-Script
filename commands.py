@@ -65,9 +65,13 @@ def recentCommand(argument):
 	if numberOfRecentGames > len(gameLifeSorted):
 		numberOfRecentGames = len(gameLifeSorted)
 
-	print('\nLast ' + str(numberOfRecentGames) + ' games played:')
+	# If there are no games in list, state that. Else, print as usual
+	if numberOfRecentGames == 0:
+		print('\nNo recently played games found in database')
+	else:
+		print('\nLast ' + str(numberOfRecentGames) + ' games played:')
 
-	op.printOutput(gameLifeSorted[:numberOfRecentGames])
+		op.printOutput(gameLifeSorted[:numberOfRecentGames])
 
 
 def gamelifeCommand(argument):
