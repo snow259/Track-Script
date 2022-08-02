@@ -12,9 +12,11 @@ def randomGame(argument):
 	else:
 		argumentLength = len(argument)
 		if argumentLength == 1:
+			# Check if single argument provided is an int
 			try:
 				count = int(argument[0])
-			except Exception:
+			# If it isn't, assume string representing name
+			except ValueError:
 				print('Too few arguments for random choice')
 			else:
 				if count > 1:
