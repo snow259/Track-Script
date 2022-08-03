@@ -56,13 +56,32 @@ def calculateDuration(rowId):
 def userInput():
 	inputString = input('\nEnter game: ')
 	inputString = inputString.strip()
-	gameTime = tf.processDateTime(dt.datetime.now())
+	gameTime = dt.datetime.now()
 
-	return inputString, gameTime
+	timezone = gameTime.astimezone()
+	gameTime = tf.processDateTime(gameTime)
+
+	return inputString, gameTime, timezone
 
 
-def writeStart(inputString, gameTime):
-	dataops.writeSession(None, inputString, gameTime, None, None)
+def writeStart(inputString, gameTime, timezone):
+	gameInfo = {
+		'rowId': None,
+		'name': inputString,
+		'startTime': gameTime,
+		'endTime': None,
+		'duration': None,
+	}
+
+	tzInfo = {
+		'rowId': None,
+		'startTimeTzOffset': timezone.utcoffset().seconds,
+		'startTimeTzName': timezone.tzname(),
+		'endTimeTzOffset': None,
+		'endTimeTzName': None,
+	}
+	# dataops.writeSession(rowId=None, name=inputString, startTime=gameTime, endTime=None, duration=None)
+	dataops.writeSession(gameInfo, tzInfo)
 
 
 def inputEnd(rowId):
@@ -70,10 +89,17 @@ def inputEnd(rowId):
 
 	choiceString = None
 	choice = di.keyInput(choiceList, choiceString)
-	endTime = tf.processDateTime(dt.datetime.now())
+	endTime = dt.datetime.now()
+
+	timezone = endTime.astimezone()
+	endTime = tf.processDateTime(endTime)
 
 	if choice == 'close':
-		dataops.closeSession(endTime)
+		tzInfo = {
+			'endTimeTzOffset': timezone.utcoffset().seconds,
+			'endTimeTzName': timezone.tzname(),
+		}
+		dataops.closeSession(endTime, tzInfo)
 
 	elif choice == 'restart':
 		startTime = tf.processDateTime(dt.datetime.now())
@@ -95,6 +121,7 @@ def userInputEndTime(rowId=None):
 	inputCorrect = False
 	while inputCorrect is False:
 		userEndTime = di.timeInput(None, 'Enter end time in format: YYYY-MM-DD HH:MM:SS\n', 'endTime')
+		timezone = dt.datetime.now().astimezone()
 		if userEndTime != '/cancel':
 			isThisRightString = 'Entered time is: ' + userEndTime + '. Is this satisfactory?'
 			isThisRight = di.ynChoiceInput(isThisRightString)
@@ -108,7 +135,11 @@ def userInputEndTime(rowId=None):
 	if userEndTime != '/cancel':
 		endTime = tf.stringToDatetime(userEndTime)
 		if rowId is None:
-			dataops.closeSession(endTime)
+			tzInfo = {
+				'endTimeTzOffset': timezone.utcoffset().seconds,
+				'endTimeTzName': timezone.tzname(),
+			}
+			dataops.closeSession(endTime, tzInfo)
 			return endTime
 		elif rowId is not None:
 			key = 'endTime'

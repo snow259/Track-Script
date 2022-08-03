@@ -36,13 +36,15 @@ def backupArchive(archiveBackupPath):
 def archive():
 	attachString = 'ATTACH ? AS mainDatabase'
 	attachArgument = (databasePath,)
-	insertGameString = 'INSERT INTO Games(name, startTime, endTime, duration) SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
+	insertGamesString = 'INSERT INTO Games(name, startTime, endTime, duration) SELECT name, startTime, endTime, duration FROM mainDatabase.Games'
+	insertTzString = 'INSERT INTO Timezones(startTimeTzOffset, startTimeTzName, endTimeTzOffset, endTimeTzName) SELECT startTimeTzOffset, startTimeTzName, endTimeTzOffset, endTimeTzName FROM mainDatabase.Timezones'
 	detachString = 'DETACH DATABASE mainDatabase'
 	conn = sqlite3.connect(archivePath)
 	cursor = conn.cursor()
 	try:
 		cursor.execute(attachString, attachArgument)
-		cursor.execute(insertGameString)
+		cursor.execute(insertGamesString)
+		cursor.execute(insertTzString)
 	except Exception as e:
 		print('Error in archive()')
 		print(e)
@@ -71,6 +73,7 @@ def checkForArchive():
 		archive = sqlite3.connect(archivePath)
 		cursor = archive.cursor()
 		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TEXT)')
+		cursor.execute('CREATE TABLE Timezones (id INTEGER PRIMARY KEY, startTimeTzOffset INTEGER, startTimeTzName TEXT, endTimeTzOffset Integer, endTimeTzName TEXT)')
 		archive.close()
 
 

@@ -142,3 +142,25 @@ Backup operation is requested if this database has sessions from more than five 
 ### Archive Database
 
 Called archiveDatabase.db, it contains every single session that has ever been made, excluding those currently in main database. It cannot be viewed or edited, but the script can read it for functions not under the main functions.
+
+### Timezones
+
+Both databases currently store timezones. As this feature was added on a tight schedule, it is very much a placeholder implementation.
+
+Currently, timezones are written to the databases in the Timezones table when a time, either startTime or endTime, is written to the database.
+
+Both the offset from UTC in seconds and the name of the timezone for both startTime and endTime are recorded in the databases.
+
+The following actions trigger a timezone write:
+- Start a session
+- End a session
+  - By using "close"
+  - By using "input"
+- Delete a session
+
+The following do not trigger a timezone write:
+- Editing a session
+
+Timezones cannot be accessed in any way by the user, and currently exists solely to record the data for a future better implementation of timezones.
+
+Game life does not work with timezones yet. As it is a feature completely generated from existing timestamps, there will not be any errors or lost data either now, or in the future when a better implementation of timezones is added. Weird values are to be expected if working around timezones as a result, until such a time.

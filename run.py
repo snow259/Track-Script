@@ -37,7 +37,7 @@ def runBackup():
 def noOpenSessions():
 	track.checkDuration()
 
-	inputString, gameTime = track.userInput()
+	inputString, gameTime, timezone = track.userInput()
 
 	if inputString.startswith('/'):
 		command, argument = di.processCommand(inputString)
@@ -61,7 +61,7 @@ def noOpenSessions():
 		# Stripped blank inputs have length 0
 		pass
 	else:
-		track.writeStart(inputString, gameTime)
+		track.writeStart(inputString, gameTime, timezone)
 
 
 # If openSessions == 1, take input to close it

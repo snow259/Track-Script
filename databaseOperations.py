@@ -11,20 +11,21 @@ databasePath = dataDirectory + '\\mainDatabase.db'
 archivePath = dataDirectory + '\\archiveDatabase.db'
 
 
-# Checks if folder for databases exists, creates elsewise
+# Checks if folder for databases exists, creates one elsewise
 def checkForDataFolder():
 	dirList = os.listdir(fileDirectory)
 	if dirList.count('Data') == 0:
 		os.mkdir(dataDirectory)
 
 
-# Checks if database exists, creases elsewise
+# Checks if database exists, creates one elsewise
 def checkForDatabase():
 	dirList = os.listdir(dataDirectory)
 	if dirList.count('mainDatabase.db') == 0:
 		database = sqlite3.connect(databasePath)
 		cursor = database.cursor()
 		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TEXT)')
+		cursor.execute('CREATE TABLE Timezones (id INTEGER PRIMARY KEY, startTimeTzOffset INTEGER, startTimeTzName TEXT, endTimeTzOffset Integer, endTimeTzName TEXT)')
 		database.close()
 
 
@@ -139,24 +140,33 @@ def returnGameLifeSorted():
 
 
 # Writes session to database
-def writeSession(rowId, name, startTime, endTime, duration):
-	insertString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
-	argument = (rowId, name, startTime, endTime, duration)
-	executeWrite(databasePath, [insertString], [argument], 'writeSession()')
+def writeSession(gameInfo, tzInfo):
+	insertGameString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
+	insertGameArgument = (gameInfo['rowId'], gameInfo['name'], gameInfo['startTime'], gameInfo['endTime'], gameInfo['duration'])
+
+	insertTzString = 'INSERT INTO Timezones VALUES(?, ?, ?, ?, ?)'
+	insertTzArgument = (tzInfo['rowId'], tzInfo['startTimeTzOffset'], tzInfo['startTimeTzName'], tzInfo['endTimeTzOffset'], tzInfo['endTimeTzName'])
+
+	executeWrite(databasePath, [insertGameString, insertTzString], [insertGameArgument, insertTzArgument], 'writeSession()')
 
 
 # Closes session in database
-def closeSession(endTime):
-	closeString = 'UPDATE Games SET endTime = ? WHERE endTime IS NULL'
-	argument = (endTime, )
-	executeWrite(databasePath, [closeString], [argument], 'closeSession()')
+def closeSession(endTime, tzInfo):
+	closeGameString = 'UPDATE Games SET endTime = ? WHERE endTime IS NULL'
+	closeGameArgument = (endTime,)
+
+	closeTzString = 'UPDATE Timezones SET endTimeTzOffset = ?, endTimeTzName = ? WHERE endTimeTzOffset IS NULL'
+	closeTzArgument = (tzInfo['endTimeTzOffset'], tzInfo['endTimeTzName'])
+
+	executeWrite(databasePath, [closeGameString, closeTzString], [closeGameArgument, closeTzArgument], 'closeSession()')
 
 
 # Deletes specified sessions
 def deleteSession(rowId):
-	deleteString = 'DELETE FROM Games WHERE id IS ?'
+	deleteGamesString = 'DELETE FROM Games WHERE id IS ?'
 	argument = (rowId, )
-	executeWrite(databasePath, [deleteString], [argument], 'deleteSession()')
+	deleteTzString = 'DELETE FROM Timezones WHERE id IS ?'
+	executeWrite(databasePath, [deleteGamesString, deleteTzString], [argument, argument], 'deleteSession()')
 
 
 # Writes the duration of a session
@@ -175,9 +185,11 @@ def modifySession(rowId, key, value):
 
 # Deletes all sessions from database, done during backup
 def deleteAllMain():
-	deleteAllMainString = 'DELETE FROM Games'
-	argument = None
-	executeWrite(databasePath, [deleteAllMainString], [argument], 'deleteAllMain()')
+	deleteAllMainGamesString = 'DELETE FROM Games'
+	deleteAllMainGamesArgument = None
+	deleteAllMainTzString = 'DELETE FROM Timezones'
+	deleteAllMainTzArgument = None
+	executeWrite(databasePath, [deleteAllMainGamesString, deleteAllMainTzString], [deleteAllMainGamesArgument, deleteAllMainTzArgument], 'deleteAllMain()')
 
 
 # Vacuums database into another location to serve as backup
