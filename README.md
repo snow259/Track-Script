@@ -149,14 +149,15 @@ Both databases currently store timezones. As this feature was added on a tight s
 
 Currently, timezones are written to the databases in the Timezones table when a time, either startTime or endTime, is written to the database.
 
-Both the offset from UTC in seconds and the name of the timezone for both startTime and endTime are recorded in the databases.
+Both the offset from UTC in seconds and the name of the timezone for both startTime and endTime are recorded in the databases. The UTC offset picks up a negative sign if the utcoffset().days object returns a -1.
 
 The following actions trigger a timezone write:
 - Start a session
 - End a session
   - By using "close"
   - By using "input"
-- Delete a session
+- Delete a session (deletes entry)
+- Run backup (copies to Archive Database, deletes in Main Database)
 
 The following do not trigger a timezone write:
 - Editing a session

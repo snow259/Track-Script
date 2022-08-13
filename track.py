@@ -80,6 +80,9 @@ def writeStart(inputString, gameTime, timezone):
 		'endTimeTzOffset': None,
 		'endTimeTzName': None,
 	}
+
+	if timezone.utcoffset().days == -1:
+		tzInfo['startTimeTzOffset'] = - tzInfo['startTimeTzOffset']
 	# dataops.writeSession(rowId=None, name=inputString, startTime=gameTime, endTime=None, duration=None)
 	dataops.writeSession(gameInfo, tzInfo)
 
@@ -99,6 +102,9 @@ def inputEnd(rowId):
 			'endTimeTzOffset': timezone.utcoffset().seconds,
 			'endTimeTzName': timezone.tzname(),
 		}
+
+		if timezone.utcoffset().days == -1:
+			tzInfo['endTimeTzOffset'] = - tzInfo['endTimeTzOffset']
 		dataops.closeSession(endTime, tzInfo)
 
 	elif choice == 'restart':
@@ -139,6 +145,9 @@ def userInputEndTime(rowId=None):
 				'endTimeTzOffset': timezone.utcoffset().seconds,
 				'endTimeTzName': timezone.tzname(),
 			}
+
+			if timezone.utcoffset().days == -1:
+				tzInfo['endTimeTzOffset'] = - tzInfo['endTimeTzOffset']
 			dataops.closeSession(endTime, tzInfo)
 			return endTime
 		elif rowId is not None:
