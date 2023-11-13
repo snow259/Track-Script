@@ -128,6 +128,20 @@ If more or less recently played games are needed, an integer can also be added t
 /recent 10
 ```
 
+### Top
+
+Time spent in games sorted in descending order by time played followed by times played (default 15) can be viewed with the following command:
+
+```
+/top
+```
+
+A different count can be viewed by adding an integer to the command. Like with recent, the following prints out the top 10 games or all games if less than that have been played:
+
+```
+/top 10
+```
+
 The Databases
 =============
 

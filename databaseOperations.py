@@ -150,6 +150,7 @@ def returnGameLifeSorted():
 	return rows
 
 
+# Sums up the time played in each game found in the main and archive databases, and legacy if found
 def returnTotalTimePlayed():
 	queries = list()
 	arguments = list()

@@ -82,8 +82,8 @@ def gamelifeCommand(argument):
 
 
 # Prints out the top n games played where n is an argument
-def topPlayedCommand(argument):
-	defaultNumberOfTopPlayed = 10
+def topCommand(argument):
+	defaultNumberOfTopPlayed = 15
 	rows = dataops.returnTotalTimePlayed()
 
 	if argument is None:
