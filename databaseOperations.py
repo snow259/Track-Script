@@ -11,6 +11,8 @@ databasePath = dataDirectory + '\\mainDatabase.db'
 archivePath = dataDirectory + '\\archiveDatabase.db'
 
 
+
+# Setup functions
 # Checks if folder for databases exists, creates one elsewise
 def checkForDataFolder():
 	dirList = os.listdir(fileDirectory)
@@ -29,11 +31,12 @@ def checkForDatabase():
 		database.close()
 
 
+# Database read functions
 # Checks for an open session
 def checkOpenSessions():
 	checkOpenSessionsString = 'SELECT id, name, startTime FROM Games WHERE endTime IS ?'
 	argument = (None, )
-	rows = executeRead(databasePath, checkOpenSessionsString, argument, 'checkOpenSessions()')
+	rows = executeRead(databasePath, [checkOpenSessionsString], [argument], 'checkOpenSessions()')[0]
 
 	return rows
 
@@ -42,7 +45,7 @@ def checkOpenSessions():
 def checkDurations():
 	checkDurationString = 'SELECT id, startTime, endTime FROM Games WHERE startTime IS NOT NULL AND endTime IS NOT NULL AND duration IS NULL'
 	argument = None
-	rows = executeRead(databasePath, checkDurationString, argument, 'checkDurations()')
+	rows = executeRead(databasePath, [checkDurationString], [argument], 'checkDurations()')[0]
 
 	return rows
 
@@ -51,7 +54,7 @@ def checkDurations():
 def returnTimes(rowId):
 	returnTimesString = 'SELECT startTime, endTime FROM Games WHERE id IS ?'
 	argument = (rowId, )
-	times = executeRead(databasePath, returnTimesString, argument, 'returnTimes()')
+	times = executeRead(databasePath, [returnTimesString], [argument], 'returnTimes()')[0]
 
 	return times
 
@@ -59,7 +62,7 @@ def returnTimes(rowId):
 def returnAllStartTimes():
 	returnAllStartTimesString = 'SELECT startTime FROM Games'
 	argument = None
-	startTimes = executeRead(databasePath, returnAllStartTimesString, argument, 'returnAllStartTimes()')
+	startTimes = executeRead(databasePath, [returnAllStartTimesString], [argument], 'returnAllStartTimes()')[0]
 
 	return startTimes
 
@@ -68,7 +71,7 @@ def returnAllStartTimes():
 def returnDatabaseContents():
 	returnDatabaseContentsString = 'SELECT * FROM Games'
 	argument = None
-	rows = executeRead(databasePath, returnDatabaseContentsString, argument, 'returnDatabaseContents()')
+	rows = executeRead(databasePath, [returnDatabaseContentsString], [argument], 'returnDatabaseContents()')[0]
 
 	return rows
 
@@ -77,7 +80,7 @@ def returnDatabaseContents():
 def returnRow(rowId):
 	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
 	argument = (rowId, )
-	row = executeRead(databasePath, returnRowString, argument, 'returnRow()')
+	row = executeRead(databasePath, [returnRowString], [argument], 'returnRow()')[0]
 
 	return row
 
@@ -86,7 +89,7 @@ def returnRow(rowId):
 def returnTablesList():
 	returnTableListString = 'SELECT name FROM sqlite_master WHERE type = "table"'
 	argument = None
-	rows = executeRead(databasePath, returnTableListString, argument, 'createTable()')
+	rows = executeRead(databasePath, [returnTableListString], [argument], 'createTable()')[0]
 	tables = []
 	for row in rows:
 		# Here, the contents of the sqlite3.Row object is extracted. I have no idea what the key for this is, else this would be neater to code
@@ -100,7 +103,7 @@ def returnTablesList():
 def returnArchiveContents():
 	returnArchiveContentsString = 'SELECT * FROM Games'
 	argument = None
-	rows = executeRead(archivePath, returnArchiveContentsString, argument, 'returnArchiveContents()')
+	rows = executeRead(archivePath, [returnArchiveContentsString], [argument], 'returnArchiveContents()')[0]
 
 	return rows
 
@@ -109,7 +112,7 @@ def returnArchiveContents():
 def returnGameMain(name):
 	returnGameMainString = 'SELECT * FROM Games WHERE name IS ?'
 	argument = (name,)
-	rows = executeRead(databasePath, returnGameMainString, argument, 'returnGameMain()')
+	rows = executeRead(databasePath, [returnGameMainString], [argument], 'returnGameMain()')[0]
 
 	return rows
 
@@ -118,7 +121,7 @@ def returnGameMain(name):
 def returnGameArchive(name):
 	returnGameArchiveString = 'SELECT * FROM Games WHERE name IS ?'
 	argument = (name,)
-	rows = executeRead(archivePath, returnGameArchiveString, argument, 'returnGameArchive()')
+	rows = executeRead(archivePath, [returnGameArchiveString], [argument], 'returnGameArchive()')[0]
 
 	return rows
 
@@ -126,7 +129,7 @@ def returnGameArchive(name):
 def returnGameLife():
 	returnGameLifeString = 'SELECT * FROM GameLife'
 	argument = None
-	rows = executeRead(databasePath, returnGameLifeString, argument, 'returnGameLife()')
+	rows = executeRead(databasePath, [returnGameLifeString], [argument], 'returnGameLife()')[0]
 
 	return rows
 
@@ -134,11 +137,12 @@ def returnGameLife():
 def returnGameLifeSorted():
 	returnGameLifeSortedString = 'SELECT id, name, lastPlayed FROM GameLife ORDER BY lastPlayed DESC'
 	argument = None
-	rows = executeRead(databasePath, returnGameLifeSortedString, argument, 'returnGameLifeSorted()')
+	rows = executeRead(databasePath, [returnGameLifeSortedString], [argument], 'returnGameLifeSorted()')[0]
 
 	return rows
 
 
+# Database write functions
 # Writes session to database
 def writeSession(gameInfo, tzInfo):
 	insertGameString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
@@ -227,22 +231,45 @@ def deleteGameLife(name):
 
 
 # Called by all functions that read the database and return a variable
-def executeRead(databasePath, commandString, argument, functionName):
+# def executeRead(databasePath, commandString, argument, functionName):
+# 	database = sqlite3.connect(databasePath)
+# 	database.row_factory = sqlite3.Row
+# 	cursor = database.cursor()
+
+# 	try:
+# 		if argument is None:
+# 			cursor.execute(commandString)
+# 		else:
+# 			cursor.execute(commandString, argument)
+# 	except Exception as e:
+# 		print('Error in ' + functionName)
+# 		print(e)
+# 	else:
+# 		rows = cursor.fetchall()
+# 		return rows
+# 	finally:
+# 		database.close()
+
+
+def executeRead(databasePath, commandStrings, arguments, functionName):
 	database = sqlite3.connect(databasePath)
 	database.row_factory = sqlite3.Row
 	cursor = database.cursor()
-
+	rowsList = list()
 	try:
-		if argument is None:
-			cursor.execute(commandString)
-		else:
-			cursor.execute(commandString, argument)
+		for commandString, argument in zip(commandStrings, arguments):
+			if argument is None:
+				cursor.execute(commandString)
+			else:
+				cursor.execute(commandString, argument)
+
+			rows = cursor.fetchall()
+			rowsList.append(rows)
 	except Exception as e:
 		print('Error in ' + functionName)
 		print(e)
 	else:
-		rows = cursor.fetchall()
-		return rows
+		return rowsList
 	finally:
 		database.close()
 
