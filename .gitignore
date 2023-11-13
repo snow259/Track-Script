@@ -1,6 +1,7 @@
 __pycache__
 Backup
 Data
+.idea
+Old
 *.csv
 *.db
-.idea

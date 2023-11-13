@@ -165,7 +165,7 @@ def returnTotalTimePlayed():
 		attachLegacyDataArgument = (legacyPath,)
 
 		queries.append(attachLegacyDataString)
-		queries.append(attachLegacyDataArgument)
+		arguments.append(attachLegacyDataArgument)
 
 	returnTotalTimePlayedString = """
 	SELECT	t.name,
@@ -214,9 +214,16 @@ def returnTotalTimePlayed():
 	queries.append(returnTotalTimePlayedString)
 	arguments.append(returnTotalTimePlayedArgument)
 
-	rowsList = executeRead(archivePath, queries, arguments, 'returnTotalTimePlayed()')[1]
+	rowsList = executeRead(archivePath, queries, arguments, 'returnTotalTimePlayed()')
 
-	return rowsList
+	# The only query that selects rows is the last one that returns the required data
+	# This is required as there may be two or three queries that go to the database
+	for item in rowsList:
+		if len(item) > 0:
+			rows = item
+			break
+
+	return rows
 
 
 # Database write functions
