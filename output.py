@@ -58,7 +58,7 @@ def printStrings(keysList, unpacked, maxLengths):
 	iterate = True
 	while iterate is True:
 		i = next(iteration)
-		numberOfValues = len(unpacked['id'])
+		numberOfValues = len(unpacked[keysList[0]])
 		if numberOfValues == i + 1:
 			iterate = False
 
