@@ -3,6 +3,7 @@ import randomChoice as rc
 import databaseOperations as dataops
 import output as op
 import gameLife as gl
+import gameStatistics as gs
 # All command related functions were split off here due to growing complexity caused by gameLife
 
 
@@ -77,3 +78,18 @@ def recentCommand(argument):
 
 def gamelifeCommand(argument):
 	pass
+
+
+# Prints out the top n games played where n is an argument
+def topPlayedCommand(argument):
+	rows = dataops.returnTotalTimePlayed()
+
+	if argument is not None:
+		try:
+			argument = int(argument[0])
+		except ValueError:
+			argument = 10
+	else:
+		argument = 10
+
+	gs.topPlayed(argument, rows)

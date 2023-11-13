@@ -150,6 +150,75 @@ def returnGameLifeSorted():
 	return rows
 
 
+def returnTotalTimePlayed():
+	queries = list()
+	arguments = list()
+
+	attachMainDataString = 'ATTACH ? as m;'
+	attachMainDataArgument = (databasePath,)
+
+	queries.append(attachMainDataString)
+	arguments.append(attachMainDataArgument)
+
+	if legacyDataPresent:
+		attachLegacyDataString = 'ATTACH ? as e;'
+		attachLegacyDataArgument = (legacyPath,)
+
+		queries.append(attachLegacyDataString)
+		queries.append(attachLegacyDataArgument)
+
+	returnTotalTimePlayedString = """
+	SELECT	t.name,
+			t.hours||':'||(SUBSTR('00'||t.minutes, -2, 2)) AS timePlayed,
+			t.count,
+			(SUBSTR('00'||((t.totalMinutes/t.count)/60), -2, 2))||':'||(SUBSTR('00'||((t.totalMinutes/t.count)%60), -2, 2)) as averageTimePlayed
+
+	FROM
+	(
+		SELECT	name,
+				(SUM((strftime('%s', endTime) - strftime('%s', startTime)))/3600) AS hours,
+				(SUM((strftime('%s', endTime) - strftime('%s', startTime)))/60%60) AS minutes,
+				(SUM((strftime('%s', endTime) - strftime('%s', startTime)))/60) AS totalMinutes,
+				COUNT(name) as count
+
+		FROM
+		(
+			SELECT name, startTime, endTime
+			FROM Games
+
+			UNION ALL
+
+			SELECT name, startTime, endTime
+			FROM m.Games
+
+	"""
+
+	# Selects data from legacy database
+	if legacyDataPresent:
+		returnTotalTimePlayedString += """
+		UNION ALL
+
+		SELECT name, startTime, endTime
+		FROM e.Games
+		"""
+
+	returnTotalTimePlayedString += """
+		)
+		GROUP BY name
+	) AS t
+
+	ORDER BY hours DESC, minutes DESC, count DESC
+	"""
+	returnTotalTimePlayedArgument = None
+
+	queries.append(returnTotalTimePlayedString)
+	arguments.append(returnTotalTimePlayedArgument)
+
+	rowsList = executeRead(archivePath, queries, arguments, 'returnTotalTimePlayed()')[1]
+
+	return rowsList
+
+
 # Database write functions
 # Writes session to database
 def writeSession(gameInfo, tzInfo):
