@@ -29,7 +29,7 @@ def valueMaxLengths(keysList, unpacked):
 	# maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
 	maxLengths = {}
 	for key in keysList:
-		maxLengths[key] = 0
+		maxLengths[key] = len(key)
 
 	# For each value under a key, check if the length is greater than value in maxLengths
 	for key in unpacked:
