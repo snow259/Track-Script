@@ -76,6 +76,7 @@ def recentCommand(argument):
 		op.printOutput(gameLifeSorted[:numberOfRecentGames])
 
 
+# Prints out the life of game x where x is argument
 def gamelifeCommand(argument):
 	pass
 

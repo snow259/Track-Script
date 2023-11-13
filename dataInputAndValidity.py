@@ -1,6 +1,7 @@
 import databaseOperations as dataops
 import timeFunctions as tf
 
+
 # Takes inputs starting with '/', and splits it into command and args. Arguments must be comma seperated
 def processCommand(inputString):
 	inputString = inputString.lstrip('/')
@@ -22,7 +23,7 @@ def processCommand(inputString):
 # Takes user input for rowId, checks if it is int, and exists in db, then returns it
 def rowIdInput(inputString, multipleRowIds):
 	validRowId = False
-	while validRowId == False:
+	while validRowId is False:
 		checks = []
 		# Takes input
 		rowIdList = input(inputString)
@@ -33,6 +34,7 @@ def rowIdInput(inputString, multipleRowIds):
 		if '/cancel' in rowIdList:
 			break
 
+		# Series of checks for data to pass
 		validRowIdCount = checkRowIdCount(rowIdList, multipleRowIds)
 		checks.append(validRowIdCount)
 		if validRowIdCount:
@@ -128,7 +130,7 @@ def generateKeyInputString(keyList):
 # Takes yes/no inputs
 def ynChoiceInput(inputString):
 	validChoice = False
-	while validChoice == False:
+	while validChoice is False:
 		choice = input(inputString + ' (y/n): ')
 		if choice in ['y', 'n']:
 			validChoice = True
