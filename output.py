@@ -4,6 +4,9 @@ from itertools import count
 tabLength = 8
 
 
+# While the following functions are key agnostic and theoretically should work on any sqlite3 row,
+# some exmaples will use the most common row type found by querying the main or archive database:
+# 'id', 'name', 'startTime', 'endTime', 'duration'
 def printOutput(rows):
 	keysList = rows[0].keys()
 	# Following three functions are key agnostic, comment line within is an example of how the variable will look like when working with a complete row from Games table
@@ -26,7 +29,7 @@ def unpack(keysList, rows):
 
 
 def valueMaxLengths(keysList, unpacked):
-	# maxLengths = {'id': 0, 'name': 0, 'startTime': 0, 'endTime': 0, 'duration': 0}
+	# maxLengths = {'id': 2, 'name': 4, 'startTime': 9, 'endTime': 7, 'duration': 8}
 	maxLengths = {}
 	for key in keysList:
 		maxLengths[key] = len(key)
