@@ -83,14 +83,20 @@ def gamelifeCommand(argument):
 
 # Prints out the top n games played where n is an argument
 def topPlayedCommand(argument):
+	defaultNumberOfTopPlayed = 10
 	rows = dataops.returnTotalTimePlayed()
 
-	if argument is not None:
-		try:
-			argument = int(argument[0])
-		except ValueError:
-			argument = 10
+	if argument is None:
+		numberOfTopPlayed = defaultNumberOfTopPlayed
 	else:
-		argument = 10
+		try:
+			numberOfTopPlayed = int(argument[0])
+		except ValueError:
+			print(f'Invalid number, defaulting to {defaultNumberOfTopPlayed}')
+			numberOfTopPlayed = defaultNumberOfTopPlayed
 
-	gs.topPlayed(argument, rows)
+	if numberOfTopPlayed > len(rows):
+		numberOfTopPlayed = len(rows)
+
+	gs.topPlayed(numberOfTopPlayed, rows)
+
