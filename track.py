@@ -54,8 +54,7 @@ def calculateDuration(rowId):
 
 # Takes input from user, reads current time
 def userInput():
-	inputString = input('\nEnter game: ')
-	inputString = inputString.strip()
+	inputString = di.nameInput('\nEnter game: ')
 	gameTime = dt.datetime.now()
 
 	timezone = gameTime.astimezone()
@@ -207,7 +206,7 @@ def editSession():
 		# If key not cancel, proceed with accepting new value
 		if key != '/cancel':
 			if key == 'name':
-				value = input('Enter new value: ')
+				value = di.nameInput('Enter new value: ')
 
 			if key == 'startTime':
 				value = di.timeInput(rowId, 'Enter new startTime: ', 'startTime')

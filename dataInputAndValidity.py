@@ -141,8 +141,12 @@ def ynChoiceInput(inputString):
 		return False
 
 
-def nameInput():
-	pass
+# Takes user input for names (or commands, as both are entered in the same location)
+def nameInput(inputString):
+	nameString = input(inputString)
+	nameString = nameString.strip()
+
+	return nameString
 
 
 # Takes user input for any time, checks if it is of the right format, checks if resulting duration > 0, then returns it
