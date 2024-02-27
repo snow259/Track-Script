@@ -151,6 +151,7 @@ def returnGameLifeSorted():
 
 
 # Sums up the time played in each game found in the main and archive databases, and legacy if found
+# Sorted in descending order
 def returnTotalTimePlayed():
 	queries = list()
 	arguments = list()
@@ -225,6 +226,60 @@ def returnTotalTimePlayed():
 			break
 
 	return rows
+
+
+# Returns sessions between the two given dates. startRange refers to the start of the time range, endRange refers to the end of the time range
+# Arguments are to be datetime objects
+# If name is provided, query selects only sessions of that game within given time range
+# Returns None if no sessions are found in the given range
+def returnSessionsBetweenRange(startRange, endRange, name=None):
+	queries = list()
+	arguments = list()
+
+	attachMainDataString = 'ATTACH ? as m;'
+	attachMainDataArgument = (databasePath,)
+
+	queries.append(attachMainDataString)
+	arguments.append(attachMainDataArgument)
+
+	returnSessionsBetweenDaysAgoString = """
+	SELECT *
+	FROM
+	(
+		SELECT name, startTime, endTime, duration
+		FROM Games
+
+
+		UNION ALL
+
+		SELECT name, startTime, endTime, duration
+		FROM m.Games
+	)
+
+	WHERE endTime > ?
+	AND endTime < ?
+	"""
+	returnSessionsBetweenDaysAgoArgument = [startRange, endRange]
+
+	if name is not None:
+		returnSessionsBetweenDaysAgoString += """
+		AND name = ?
+	"""
+		returnSessionsBetweenDaysAgoArgument.append(name)
+
+	queries.append(returnSessionsBetweenDaysAgoString)
+	arguments.append(returnSessionsBetweenDaysAgoArgument)
+
+	rowsList = executeRead(archivePath, queries, arguments, 'returnTotalTimePlayed()')
+
+	# The only query that selects rows is the last one that returns the required data
+	# This is required as there may be two or three queries that go to the database
+	for item in rowsList:
+		if len(item) > 0:
+			rows = item
+			return rows
+
+	return None
 
 
 # Database write functions
