@@ -134,6 +134,7 @@ def returnGameArchive(name):
 	return rows
 
 
+# Returns GameLife table
 def returnGameLife():
 	returnGameLifeString = 'SELECT * FROM GameLife'
 	argument = None
@@ -142,10 +143,20 @@ def returnGameLife():
 	return rows
 
 
+# Returns GameLife table sorted by lastPlayed
 def returnGameLifeSorted():
 	returnGameLifeSortedString = 'SELECT id, name, lastPlayed FROM GameLife ORDER BY lastPlayed DESC'
 	argument = None
 	rows = executeRead(databasePath, [returnGameLifeSortedString], [argument], 'returnGameLifeSorted()')[0]
+
+	return rows
+
+
+# Returns life for speicifc game
+def returnSpecificGameLife(name):
+	returnSpecificGameLifeString = 'SELECT * FROM GameLife WHERE name = ?'
+	argument = [name]
+	rows = executeRead(databasePath, [returnSpecificGameLifeString], [argument], 'returnSpecificGameLife')[0]
 
 	return rows
 
