@@ -100,3 +100,25 @@ def topCommand(argument):
 
 	gs.topPlayed(numberOfTopPlayed, rows)
 
+
+# Prints out the stats for game x has been played where x is argument
+# Intended stats: total time played, times played, time in last fortnight/month/year, times played in last fortnight/month/year
+# First played, last played
+def statsCommand(argument):
+	if len(argument) > 1:
+		print('Too many games provided')
+	elif len(argument) == 0:
+		print('Provide one game')
+	else:
+		name = argument[0]
+
+		rows = dataops.returnGameLife()
+		gamePresent = False
+		for row in rows:
+			if row['name'] == name:
+				gamePresent = True
+
+		if gamePresent is True:
+			gs.stats(name)
+		else:
+			print('Game not found')

@@ -57,6 +57,8 @@ def noOpenSessions():
 			cmd.recentCommand(argument)
 		elif command == 'top':
 			cmd.topCommand(argument)
+		elif command == 'stats':
+			cmd.statsCommand(argument)
 		elif command == 'exit':
 			loop[0] = False
 	elif len(inputString) == 0:
