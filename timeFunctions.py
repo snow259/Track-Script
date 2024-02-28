@@ -80,3 +80,9 @@ def dateDifference(date1, dateTime):
 	difference = date1 - date2
 
 	return difference
+
+
+def stringToTimeDelta(timeDeltaString):
+	timeDeltaString = timeDeltaString.split(':')
+
+	return dt.timedelta(hours=int(timeDeltaString[0]), minutes=int(timeDeltaString[1]))
