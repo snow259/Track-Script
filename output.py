@@ -8,7 +8,8 @@ tabLength = 8
 # some exmaples will use the most common row type found by querying the main or archive database:
 # 'id', 'name', 'startTime', 'endTime', 'duration'
 def printOutput(rows):
-	keysList = rows[0].keys()
+	# list() forces keysList to be subscriptable
+	keysList = list(rows[0].keys())
 	# Following three functions are key agnostic, comment line within is an example of how the variable will look like when working with a complete row from Games table
 	unpacked = unpack(keysList, rows)
 	maxLengths = valueMaxLengths(keysList, unpacked)
