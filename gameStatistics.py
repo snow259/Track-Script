@@ -16,18 +16,29 @@ def topPlayed(numberOfTopPlayed, rows):
 
 def stats(name):
     rows = dataops.returnTotalTimePlayed()
+    totalStats = dict()
     for row in rows:
         if row['name'] == name:
-            timePlayed = row['timePlayed']
-            count = row['count']
-            averageTimePlayed = row['averageTimePlayed']
+            totalStats['Time Period'] = 'Total'
+            totalStats['Time Played'] = row['timePlayed']
+            totalStats['Times Played'] = row['count']
+            totalStats['Average Time'] = row['averageTimePlayed']
             break
 
     now = dt.datetime.now()
     fortnightAgo = now - dt.timedelta(days=14)
     monthAgo = now - dt.timedelta(days=30)
+    yearAgo = now - dt.timedelta(days=365)
 
     rows = dataops.returnSessionsBetweenRange(fortnightAgo, now, name)
+    fortnightStats = statsFromSessions(rows, 'Fortnight')
+
+    rows = dataops.returnSessionsBetweenRange(monthAgo, now, name)
+    monthStats = statsFromSessions(rows, 'Month')
+
+    rows = dataops.returnSessionsBetweenRange(yearAgo, now, name)
+    yearStats = statsFromSessions(rows, 'Year')
+
     if rows is None:
         print(name + ' was not played in the last fortnight')
     else:
@@ -39,12 +50,29 @@ def stats(name):
     else:
         op.printOutput(rows)
 
-    printStats(name, timePlayed, count, averageTimePlayed)
+    printStats(name, totalStats, fortnightStats, monthStats, yearStats)
+
+
+def statsFromSessions(rows, timePeriod):
+    stats = {
+        'Time Period': timePeriod,
+        'Time Played': dt.timedelta(seconds=0),
+        'Times Played': 0,
+        'Average Time': dt.timedelta(seconds=0),
+    }
+    if rows is not None:
+        for row in rows:
+            stats['count'] += 1
+            stats['timePlayed'] = stats['timePlayed'] + tf.stringToTimeDelta(row['duration'])
+
+        stats['averageTimePlayed'] = stats['timePlayed'] / stats['count']
+
+    return stats
 
 
 # Converts duration from the database which is in hh:mm format to years, months, days, hours, minutes
 def convertDurationToLargerUnits(timePlayed):
-    minutes = timePlayed.seconds / 60
+    minutes = int(timePlayed.seconds / 60)
     hours = 0
     days = timePlayed.days
     months = 0
@@ -73,19 +101,22 @@ def convertDurationToLargerUnits(timePlayed):
     return largeUnitTime
 
 
-def printStats(name, timePlayed, count, averageTimePlayed):
+def printStats(name, totalStats, fortnightStats, monthStats, yearStats):
     print('\n' + name + ' statistics')
 
     gameLife = dataops.returnSpecificGameLife(name)
     gameLife = gl.convertLifeRows(gameLife)
-    print(f"\nFirst played: {gameLife[name]['firstPlayed']}\nLast played: {gameLife[name]['lastPlayed']}")
+    # print(f"\nFirst played: {gameLife[name]['firstPlayed']}\nLast played: {gameLife[name]['lastPlayed']}")
 
-    print(f'\nTimes played: {count}')
+    # print(f"\nTimes played: {totalStats['count']}")
 
-    print('\nTotal time:')
+    # print('\nTotal time:')
 
-    print(f'{timePlayed}')
-    printLargeUnitDuration(convertDurationToLargerUnits(tf.stringToTimeDelta(timePlayed)))
+    # print(f"{totalStats['timePlayed']}")
+    # printLargeUnitDuration(convertDurationToLargerUnits(tf.stringToTimeDelta(totalStats['timePlayed'])))
+
+    outputRows = [totalStats, fortnightStats, monthStats, yearStats]
+    op.printOutput(outputRows)
 
 
 # Prints only non zero time units
