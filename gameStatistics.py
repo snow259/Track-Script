@@ -50,15 +50,15 @@ def convertDurationToLargerUnits(timePlayed):
     months = 0
     years = 0
 
-    if minutes >= 60:
+    while minutes >= 60:
         hours += 1
         minutes -= 60
 
-    if days >= 30:
+    while days >= 30:
         months += 1
         days -= 30
 
-    if months >= 12:
+    while months >= 12:
         years += 1
         months -= 12
 
