@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import dataInputAndValidity as di
 
 # All paths used
 # filePath is path to this file, its directory is fileDirectory
@@ -81,7 +82,7 @@ def returnDatabaseContents():
 	argument = None
 	rows = executeRead(databasePath, [returnDatabaseContentsString], [argument], 'returnDatabaseContents()')[0]
 
-	return rows
+	return di.changeDurationStringFormat(rows)
 
 
 # Returns single, specified row
@@ -90,7 +91,7 @@ def returnRow(rowId):
 	argument = (rowId, )
 	row = executeRead(databasePath, [returnRowString], [argument], 'returnRow()')[0]
 
-	return row
+	return di.changeDurationStringFormat(rows)
 
 
 # Returns list of table names from the database
@@ -113,7 +114,7 @@ def returnArchiveContents():
 	argument = None
 	rows = executeRead(archivePath, [returnArchiveContentsString], [argument], 'returnArchiveContents()')[0]
 
-	return rows
+	return di.changeDurationStringFormat(rows)
 
 
 # Return rows from main database containing specified game
@@ -122,7 +123,7 @@ def returnGameMain(name):
 	argument = (name,)
 	rows = executeRead(databasePath, [returnGameMainString], [argument], 'returnGameMain()')[0]
 
-	return rows
+	return di.changeDurationStringFormat(rows)
 
 
 # Return rows from archive database containing specified game
@@ -131,7 +132,7 @@ def returnGameArchive(name):
 	argument = (name,)
 	rows = executeRead(archivePath, [returnGameArchiveString], [argument], 'returnGameArchive()')[0]
 
-	return rows
+	return di.changeDurationStringFormat(rows)
 
 
 # Returns GameLife table

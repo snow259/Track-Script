@@ -20,9 +20,9 @@ def stats(name):
     for row in rows:
         if row['name'] == name:
             totalStats['Time Period'] = 'Total'
-            totalStats['Time Played'] = row['timePlayed']
+            totalStats['Time Played'] = tf.timeDeltaToString(tf.stringToTimeDelta(row['timePlayed']))
             totalStats['Times Played'] = row['count']
-            totalStats['Average Time'] = row['averageTimePlayed']
+            totalStats['Average Time'] = tf.timeDeltaToString(tf.stringToTimeDelta(row['averageTimePlayed']))
             break
 
     now = dt.datetime.now()

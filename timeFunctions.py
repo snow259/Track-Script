@@ -96,14 +96,13 @@ def timeDeltaToString(timeDelta):
 		hours += 1
 		minutes -= 60
 
-	if minutes == 0:
-		minutes = '00'
-	else:
-		minutes = str(minutes)
+	minutes = str(minutes)
+	hours = str(hours)
 
-	if hours == 0:
-		hours = '00'
-	else:
-		hours = str(hours)
+	if len(minutes) == 1:
+		minutes = '0' + minutes
+
+	if len(hours) == 1:
+		hours = '0' + hours
 
 	return hours + ':' + minutes

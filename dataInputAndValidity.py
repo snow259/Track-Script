@@ -212,4 +212,14 @@ def checkTimeDifference(rowId, dateTime, startOrEnd):
 
 def durationInput():
 	pass
-	
+
+
+def changeDurationStringFormat(rows):
+	# for row in rows:
+	# 	row['duration'] = tf.stringToTimeDelta(row['duration'])
+
+	for i in range(len(rows)):
+		rows[i] = dict(rows[i])
+		rows[i]['duration'] = tf.timeDeltaToString(tf.stringToTimeDelta(rows[i]['duration']))
+
+	return rows
