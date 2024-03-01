@@ -27,8 +27,9 @@ def rowIdInput(inputString, multipleRowIds):
 		checks = []
 		# Takes input
 		rowIdList = input(inputString)
-		rowIdList = rowIdList.strip()
-		rowIdList = rowIdList.split()
+		rowIdList = rowIdList.split(',')
+		for i in range(len(rowIdList)):
+			rowIdList[i] = rowIdList[i].strip()
 
 		# Exit
 		if '/cancel' in rowIdList:

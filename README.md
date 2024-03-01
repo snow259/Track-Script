@@ -67,11 +67,11 @@ A session can be deleted at any time by usage of the delete command. This is an 
 Enter game: /delete
 ```
 
-Like the edit command, the delete command also prints out all sessions in the main database and waits for the rowId of the session to be deleted. Multiple sessions can be deleted at once. The required rowIds should be entered separated by a space
+Like the edit command, the delete command also prints out all sessions in the main database and waits for the rowId of the session to be deleted. Multiple sessions can be deleted at once. The required rowIds should be entered separated by a comma
 
 ```
 Ender ids to delete: 2
-Ender ids to delete: 4 6 10
+Ender ids to delete: 4, 6, 10
 ```
 
 ### Backups

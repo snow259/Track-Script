@@ -3,7 +3,6 @@ import databaseOperations as dataops
 import datetime as dt
 import timeFunctions as tf
 import gameLife as gl
-import dataInputAndValidity as di
 
 
 def topPlayed(numberOfTopPlayed, rows):
