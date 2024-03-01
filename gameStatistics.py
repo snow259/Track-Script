@@ -51,10 +51,10 @@ def statsFromSessions(rows, timePeriod):
     }
     if rows is not None:
         for row in rows:
-            stats['count'] += 1
-            stats['timePlayed'] = stats['timePlayed'] + tf.stringToTimeDelta(row['duration'])
+            stats['Times Played'] += 1
+            stats['Time Played'] = stats['Time Played'] + tf.stringToTimeDelta(row['duration'])
 
-        stats['averageTimePlayed'] = stats['timePlayed'] / stats['count']
+        stats['Average Time'] = stats['Time Played'] / stats['Times Played']
     
     stats['Time Played'] = tf.timeDeltaToString(stats['Time Played'])
     stats['Average Time'] = tf.timeDeltaToString(stats['Average Time'])
