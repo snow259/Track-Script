@@ -1,6 +1,6 @@
 # Track-Script
 
-I wrote this script to keep track of how what games are played and for how long. All data is stored in SQLite3 databases.
+I wrote this script to keep track of what games are played and for how long. All data is stored in SQLite3 databases.
 
 Core Functionality
 ==================
@@ -126,6 +126,14 @@ If more or less recently played games are needed, an integer can also be added t
 
 ```
 /recent 10
+```
+
+### Stats
+
+Prints out some statistics of a game. Currently prints out the time spent in game, number of times played, and average time played for the last fortnight, month, year, and all time. Also prints out the dates between which it has been played and the current rank in terms of time played.
+
+```
+/stats name
 ```
 
 ### Top
