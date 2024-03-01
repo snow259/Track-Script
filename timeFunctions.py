@@ -90,7 +90,7 @@ def stringToTimeDelta(timeDeltaString):
 
 def timeDeltaToString(timeDelta):
 	minutes = int(timeDelta.seconds / 60)
-	hours = 0
+	hours = timeDelta.days * 24
 
 	while minutes >= 60:
 		hours += 1
@@ -99,10 +99,12 @@ def timeDeltaToString(timeDelta):
 	minutes = str(minutes)
 	hours = str(hours)
 
+	# Convert string to mm from m
 	if len(minutes) == 1:
 		minutes = '0' + minutes
 
-	if len(hours) == 1:
-		hours = '0' + hours
+	# Convert string to hh from h
+	# if len(hours) == 1:
+	# 	hours = '0' + hours
 
 	return hours + ':' + minutes

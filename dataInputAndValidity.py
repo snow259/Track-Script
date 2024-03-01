@@ -214,12 +214,24 @@ def durationInput():
 	pass
 
 
-def changeDurationStringFormat(rows):
-	# for row in rows:
-	# 	row['duration'] = tf.stringToTimeDelta(row['duration'])
-
+def changeDurationStringFormat(rows, cols):
 	for i in range(len(rows)):
 		rows[i] = dict(rows[i])
-		rows[i]['duration'] = tf.timeDeltaToString(tf.stringToTimeDelta(rows[i]['duration']))
+
+		for col in cols:
+			split = rows[i][col].split(':')
+
+			# Formatting to hh:mm
+			# for j in range(2):
+			# 	if len(split[j]) == 1:
+			# 		split[j] = '0' + split[j]
+
+			# Formatting to h:mm
+			if int(split[0]) < 10:
+				split[0] = str(int(split[0]))
+			if len(split[1]) == 1:
+				split[1] = '0' + split[1]
+
+			rows[i][col] = split[0] + ':' + split[1]
 
 	return rows

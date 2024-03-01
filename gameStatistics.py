@@ -3,6 +3,7 @@ import databaseOperations as dataops
 import datetime as dt
 import timeFunctions as tf
 import gameLife as gl
+import dataInputAndValidity as di
 
 
 def topPlayed(numberOfTopPlayed, rows):
@@ -20,9 +21,9 @@ def stats(name):
     for row in rows:
         if row['name'] == name:
             totalStats['Time Period'] = 'Total'
-            totalStats['Time Played'] = tf.timeDeltaToString(tf.stringToTimeDelta(row['timePlayed']))
+            totalStats['Time Played'] = row['timePlayed']
             totalStats['Times Played'] = row['count']
-            totalStats['Average Time'] = tf.timeDeltaToString(tf.stringToTimeDelta(row['averageTimePlayed']))
+            totalStats['Average Time'] = row['averageTimePlayed']
             break
 
     now = dt.datetime.now()
@@ -55,7 +56,7 @@ def statsFromSessions(rows, timePeriod):
             stats['Time Played'] = stats['Time Played'] + tf.stringToTimeDelta(row['duration'])
 
         stats['Average Time'] = stats['Time Played'] / stats['Times Played']
-    
+
     stats['Time Played'] = tf.timeDeltaToString(stats['Time Played'])
     stats['Average Time'] = tf.timeDeltaToString(stats['Average Time'])
 

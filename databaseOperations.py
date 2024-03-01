@@ -82,16 +82,16 @@ def returnDatabaseContents():
 	argument = None
 	rows = executeRead(databasePath, [returnDatabaseContentsString], [argument], 'returnDatabaseContents()')[0]
 
-	return di.changeDurationStringFormat(rows)
+	return di.changeDurationStringFormat(rows, ['duration'])
 
 
 # Returns single, specified row
 def returnRow(rowId):
 	returnRowString = 'SELECT * FROM Games WHERE id IS ?'
 	argument = (rowId, )
-	row = executeRead(databasePath, [returnRowString], [argument], 'returnRow()')[0]
+	rows = executeRead(databasePath, [returnRowString], [argument], 'returnRow()')[0]
 
-	return di.changeDurationStringFormat(rows)
+	return di.changeDurationStringFormat(rows, ['duration'])
 
 
 # Returns list of table names from the database
@@ -114,7 +114,7 @@ def returnArchiveContents():
 	argument = None
 	rows = executeRead(archivePath, [returnArchiveContentsString], [argument], 'returnArchiveContents()')[0]
 
-	return di.changeDurationStringFormat(rows)
+	return di.changeDurationStringFormat(rows, ['duration'])
 
 
 # Return rows from main database containing specified game
@@ -123,7 +123,7 @@ def returnGameMain(name):
 	argument = (name,)
 	rows = executeRead(databasePath, [returnGameMainString], [argument], 'returnGameMain()')[0]
 
-	return di.changeDurationStringFormat(rows)
+	return di.changeDurationStringFormat(rows, ['duration'])
 
 
 # Return rows from archive database containing specified game
@@ -132,7 +132,7 @@ def returnGameArchive(name):
 	argument = (name,)
 	rows = executeRead(archivePath, [returnGameArchiveString], [argument], 'returnGameArchive()')[0]
 
-	return di.changeDurationStringFormat(rows)
+	return di.changeDurationStringFormat(rows, ['duration'])
 
 
 # Returns GameLife table
@@ -237,7 +237,7 @@ def returnTotalTimePlayed():
 			rows = item
 			break
 
-	return rows
+	return di.changeDurationStringFormat(rows, ['timePlayed', 'averageTimePlayed'])
 
 
 # Returns sessions between the two given dates. startRange refers to the start of the time range, endRange refers to the end of the time range
@@ -289,7 +289,7 @@ def returnSessionsBetweenRange(startRange, endRange, name=None):
 	for item in rowsList:
 		if len(item) > 0:
 			rows = item
-			return rows
+			return di.changeDurationStringFormat(rows, ['duration'])
 
 	return None
 
