@@ -86,3 +86,24 @@ def stringToTimeDelta(timeDeltaString):
 	timeDeltaString = timeDeltaString.split(':')
 
 	return dt.timedelta(hours=int(timeDeltaString[0]), minutes=int(timeDeltaString[1]))
+
+
+def timeDeltaToString(timeDelta):
+	minutes = int(timeDelta.seconds / 60)
+	hours = 0
+
+	while minutes >= 60:
+		hours += 1
+		minutes -= 60
+
+	if minutes == 0:
+		minutes = '00'
+	else:
+		minutes = str(minutes)
+
+	if hours == 0:
+		hours = '00'
+	else:
+		hours = str(hours)
+
+	return hours + ':' + minutes

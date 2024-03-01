@@ -39,18 +39,7 @@ def stats(name):
     rows = dataops.returnSessionsBetweenRange(yearAgo, now, name)
     yearStats = statsFromSessions(rows, 'Year')
 
-    if rows is None:
-        print(name + ' was not played in the last fortnight')
-    else:
-        op.printOutput(rows)
-
-    rows = dataops.returnSessionsBetweenRange(monthAgo, now, name)
-    if rows is None:
-        print(name + ' was not played in the last month')
-    else:
-        op.printOutput(rows)
-
-    printStats(name, totalStats, fortnightStats, monthStats, yearStats)
+    printStats(name, fortnightStats, monthStats, yearStats, totalStats)
 
 
 def statsFromSessions(rows, timePeriod):
@@ -66,6 +55,9 @@ def statsFromSessions(rows, timePeriod):
             stats['timePlayed'] = stats['timePlayed'] + tf.stringToTimeDelta(row['duration'])
 
         stats['averageTimePlayed'] = stats['timePlayed'] / stats['count']
+    
+    stats['Time Played'] = tf.timeDeltaToString(stats['Time Played'])
+    stats['Average Time'] = tf.timeDeltaToString(stats['Average Time'])
 
     return stats
 
@@ -102,18 +94,21 @@ def convertDurationToLargerUnits(timePlayed):
 
 
 def printStats(name, totalStats, fortnightStats, monthStats, yearStats):
-    print('\n' + name + ' statistics')
+    print('\n' + name + ' statistics\n')
 
     gameLife = dataops.returnSpecificGameLife(name)
     gameLife = gl.convertLifeRows(gameLife)
-    # print(f"\nFirst played: {gameLife[name]['firstPlayed']}\nLast played: {gameLife[name]['lastPlayed']}")
 
-    # print(f"\nTimes played: {totalStats['count']}")
+    topPlayedRows = dataops.returnTotalTimePlayed()
+    rank = 1
+    for row in topPlayedRows:
+        if row['name'] == name:
+            break
+        else:
+            rank += 1
 
-    # print('\nTotal time:')
-
-    # print(f"{totalStats['timePlayed']}")
-    # printLargeUnitDuration(convertDurationToLargerUnits(tf.stringToTimeDelta(totalStats['timePlayed'])))
+    print(f"Rank: {rank}\n")
+    print(f"Played between {tf.dateToString(gameLife[name]['firstPlayed'])} to {tf.dateToString(gameLife[name]['lastPlayed'])}\n")
 
     outputRows = [totalStats, fortnightStats, monthStats, yearStats]
     op.printOutput(outputRows)
