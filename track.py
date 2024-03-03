@@ -48,7 +48,7 @@ def calculateDuration(rowId):
 	endTime = times[0]['endTime']
 	startTime = tf.stringToDatetime(startTime)
 	endTime = tf.stringToDatetime(endTime)
-	duration = str(endTime - startTime)
+	duration = tf.timeDeltaToString(endTime - startTime, keepSeconds=True)
 	dataops.writeDuration(rowId, duration)
 
 

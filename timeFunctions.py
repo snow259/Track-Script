@@ -88,7 +88,8 @@ def stringToTimeDelta(timeDeltaString):
 	return dt.timedelta(hours=int(timeDeltaString[0]), minutes=int(timeDeltaString[1]))
 
 
-def timeDeltaToString(timeDelta):
+def timeDeltaToString(timeDelta, keepSeconds=False):
+	seconds = int(timeDelta.seconds % 60)
 	minutes = int(timeDelta.seconds / 60)
 	hours = timeDelta.days * 24
 
@@ -96,8 +97,13 @@ def timeDeltaToString(timeDelta):
 		hours += 1
 		minutes -= 60
 
+	seconds = str(seconds)
 	minutes = str(minutes)
 	hours = str(hours)
+
+	# Convert string to ss from s
+	if len(seconds) == 1:
+		seconds = '0' + seconds
 
 	# Convert string to mm from m
 	if len(minutes) == 1:
@@ -107,4 +113,9 @@ def timeDeltaToString(timeDelta):
 	# if len(hours) == 1:
 	# 	hours = '0' + hours
 
-	return hours + ':' + minutes
+	durationString = hours + ':' + minutes
+
+	if keepSeconds is True:
+		durationString = durationString + ':' + seconds
+
+	return durationString
