@@ -105,10 +105,10 @@ def topCommand(argument):
 # Intended stats: total time played, times played, time in last fortnight/month/year, times played in last fortnight/month/year
 # First played, last played
 def statsCommand(argument):
-	if len(argument) > 1:
-		print('Too many games provided')
-	elif len(argument) == 0:
+	if argument is None:
 		print('Provide one game')
+	elif len(argument) > 1:
+		print('Too many games provided')
 	else:
 		name = argument[0]
 
