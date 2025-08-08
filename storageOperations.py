@@ -5,10 +5,10 @@ import os
 # filePath is path to this file, its directory is fileDirectory
 filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
-dataDirectory = fileDirectory + '\\Data'
-backupDirectory = fileDirectory + '\\Backup'
-databasePath = dataDirectory + '\\mainDatabase.db'
-archivePath = dataDirectory + '\\archiveDatabase.db'
+dataDirectory = fileDirectory + '/Data'
+backupDirectory = fileDirectory + '/Backup'
+databasePath = dataDirectory + '/mainDatabase.db'
+archivePath = dataDirectory + '/archiveDatabase.db'
 
 
 # Uses vacuum into to create a backup
@@ -60,8 +60,8 @@ def archive():
 def checkForBackupDirectories():
 	dirList = os.listdir(fileDirectory)
 	if dirList.count('Backup') == 0:
-		mainBackupDirectory = backupDirectory + '\\Main'
-		archiveBackupDirectory = backupDirectory + '\\Archive'
+		mainBackupDirectory = backupDirectory + '/Main'
+		archiveBackupDirectory = backupDirectory + '/Archive'
 		os.mkdir(backupDirectory)
 		os.mkdir(mainBackupDirectory)
 		os.mkdir(archiveBackupDirectory)

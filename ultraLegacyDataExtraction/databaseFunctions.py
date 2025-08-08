@@ -6,7 +6,8 @@ fileDirectory = os.path.dirname(filePath)
 dirList = os.listdir(fileDirectory)
 
 databaseName = 'ultraLegacyData.db'
-databasePath = fileDirectory + '\\' + databaseName
+databasePath = fileDirectory + '/' + databaseName
+
 
 def createDataBase():
 	if databaseName not in dirList:
@@ -14,6 +15,7 @@ def createDataBase():
 		cursor = database.cursor()
 		cursor.execute('CREATE TABLE Games (id INTEGER PRIMARY KEY, name TEXT NOT NULL, startTime TIMESTAMP, endTime TIMESTAMP, duration TIMESTAMP)')
 		database.close()
+
 
 def writeSession(row):
 	writeSessionString = 'INSERT INTO Games VALUES(?, ?, ?, ?, ?)'
@@ -25,11 +27,12 @@ def writeSession(row):
 	argument = (rowId, name, startTime, endTime, duration)
 	executeWrite(databasePath, writeSessionString, argument, 'writeSession()')
 
+
 def executeWrite(databasePath, commandString, argument, functionName):
 	database = sqlite3.connect(databasePath)
 	cursor = database.cursor()
 	try:
-		if argument == None:
+		if argument is None:
 			cursor.execute(commandString)
 		else:
 			cursor.execute(commandString, argument)

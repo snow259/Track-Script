@@ -6,17 +6,17 @@ import dataInputAndValidity as di
 # filePath is path to this file, its directory is fileDirectory
 filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
-dataDirectory = fileDirectory + '\\Data'
-backupDirectory = fileDirectory + '\\Backup'
-databasePath = dataDirectory + '\\mainDatabase.db'
-archivePath = dataDirectory + '\\archiveDatabase.db'
+dataDirectory = fileDirectory + '/Data'
+backupDirectory = fileDirectory + '/Backup'
+databasePath = dataDirectory + '/mainDatabase.db'
+archivePath = dataDirectory + '/archiveDatabase.db'
 
 # Path to and presence of legacy data. Any statistics of games computed will check for legacy data
-oldDatabasesDirectory = fileDirectory + '\\Old\\Databases'
-legacyPath = oldDatabasesDirectory + '\\ultraLegacyDataProcessed.db'
+oldDatabasesDirectory = fileDirectory + '/Old/Databases'
+legacyPath = oldDatabasesDirectory + '/ultraLegacyDataProcessed.db'
 legacyDataPresent = False
 if 'Old' in os.listdir(fileDirectory):
-	if 'Databases' in os.listdir(fileDirectory + '\\Old'):
+	if 'Databases' in os.listdir(fileDirectory + '/Old'):
 		if 'ultraLegacyDataProcessed.db' in os.listdir(oldDatabasesDirectory):
 			legacyDataPresent = True
 

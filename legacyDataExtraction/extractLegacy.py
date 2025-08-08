@@ -8,11 +8,12 @@ fileDirectory = os.path.dirname(filePath)
 dirList = os.listdir(fileDirectory)
 
 databaseName = 'legacyData.db'
-databasePath = fileDirectory + '\\' + databaseName
+databasePath = fileDirectory + '/' + databaseName
 
 titleRow = ['Month', 'Date', 'Day']
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
 
 def findCsv():
 	csvList = []
@@ -23,6 +24,7 @@ def findCsv():
 	csvList.sort()
 	return csvList
 
+
 def readCsv(file):
 	with open(file) as dataFile:
 		lines = []
@@ -32,7 +34,8 @@ def readCsv(file):
 
 	return lines
 
-#Removes title row, mentions of month, and all empty spaces by copying row into another variable, and not copying the stuff to be removed
+
+# Removes title row, mentions of month, and all empty spaces by copying row into another variable, and not copying the stuff to be removed
 def deleteExtraneous(lines):
 	numberOfRows = len(lines)
 	linesPruned = []
@@ -57,6 +60,7 @@ def deleteExtraneous(lines):
 
 	return linesPruned
 
+
 def writeLines(file, lines):
 	for row in lines:
 		date = row[0]
@@ -68,6 +72,7 @@ def writeLines(file, lines):
 			session = convertSession(dateStamp, session)
 			dbf.writeSession(session)
 
+
 def generateDateStamp(file, date):
 	if len(date) == 1:
 		date = '0' + date
@@ -75,6 +80,7 @@ def generateDateStamp(file, date):
 	dateStamp = file.rstrip(' session.csv') + '-' + date
 
 	return dateStamp
+
 
 def convertSession(dateStamp, session):
 	*nameSplit, startTimeRaw, _, endTimeRaw = session.split()
@@ -85,12 +91,13 @@ def convertSession(dateStamp, session):
 		endTime = generateTimeStamp(dateStamp, endTimeRaw)
 	except Exception:
 		print('Error in: ' + dateStamp + ' ' + session)
-		
+
 	duration = calculateDuration(startTime, endTime)
 
 	session = {'name': name, 'startTime': startTime, 'endTime': endTime, 'duration': duration}
 
 	return session
+
 
 def joinName(nameSplit):
 	name = ''
@@ -99,6 +106,7 @@ def joinName(nameSplit):
 	name = name.strip()
 
 	return name
+
 
 def generateTimeStamp(dateStamp, time):
 	hour, minute = time.split(':')
@@ -113,6 +121,7 @@ def generateTimeStamp(dateStamp, time):
 
 	return timeStamp
 
+
 def calculateDuration(startTime, endTime):
 	startTime = stringToDateTime(startTime)
 	endTime = stringToDateTime(endTime)
@@ -122,15 +131,18 @@ def calculateDuration(startTime, endTime):
 
 	return duration
 
+
 def stringToDateTime(dateTimeString):
 	dateTime = dt.datetime.strptime(dateTimeString, '%Y-%m-%d %H:%M:%S')
 
 	return dateTime
 
+
 def dateTimeToString(dateTime):
 	dateTimeString = dt.datetime.strftime(dateTime, '%Y-%m-%d %H:%M:%S')
 
 	return dateTimeString
+
 
 def main():
 	dbf.createDataBase()
@@ -145,6 +157,7 @@ def main():
 		writeEnd = dt.datetime.now()
 		writeDuration = writeEnd - writeStart
 		print(str(file) + ' written in: ' + str(writeDuration))
+
 
 if __name__ == '__main__':
 	main()

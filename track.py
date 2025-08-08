@@ -11,9 +11,9 @@ import commands as cmd
 # filePath is path to this file, its directory is fileDirectory
 filePath = os.path.realpath(__file__)
 fileDirectory = os.path.dirname(filePath)
-dataDirectory = fileDirectory + '\\Data'
-backupDirectory = fileDirectory + '\\Backup'
-databasePath = dataDirectory + '\\mainDatabase.db'
+dataDirectory = fileDirectory + '/Data'
+backupDirectory = fileDirectory + '/Backup'
+databasePath = dataDirectory + '/mainDatabase.db'
 
 
 # Checks database for open sessions
@@ -280,6 +280,6 @@ def runBackupOperations():
 def generateBackupPath(backupName):
 	now = dt.datetime.now()
 	pathSuffix = tf.datetimeToString(now)
-	backupPath = '"' + backupDirectory + '\\' + backupName + '\\' + pathSuffix + '.db"'
+	backupPath = '"' + backupDirectory + '/' + backupName + '/' + pathSuffix + '.db"'
 
 	return backupPath

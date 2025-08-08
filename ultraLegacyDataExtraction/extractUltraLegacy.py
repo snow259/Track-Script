@@ -8,9 +8,10 @@ fileDirectory = os.path.dirname(filePath)
 dirList = os.listdir(fileDirectory)
 
 databaseName = 'legacyData.db'
-databasePath = fileDirectory + '\\' + databaseName
+databasePath = fileDirectory + '/' + databaseName
 
 notGames = ['Month', 'Date', 'Day', 'Total']
+
 
 def findCsv():
 	csvList = []
@@ -21,11 +22,13 @@ def findCsv():
 	csvList.sort()
 	return csvList
 
+
 def gamesList(df):
 	columns = list(df.columns)
 	games = [x for x in columns if x not in notGames]
 
 	return games
+
 
 def returnYM(file):
 	year, month = file.split('-')
@@ -33,18 +36,21 @@ def returnYM(file):
 
 	return int(year), int(month)
 
+
 def gameRows(game, df):
 	rows = df.loc[df[game].notna(), ('Date', game)]
-	rows.reset_index(inplace = True)
-	rows.drop(columns = 'index', inplace = True)
+	rows.reset_index(inplace=True)
+	rows.drop(columns='index', inplace=True)
 
 	return rows
 
+
 def convertDuration(duration):
 	duration = dt.datetime.strptime(duration, '%Hh %Mm')
-	duration = dt.timedelta(days = duration.day - 1, hours = duration.hour, minutes = duration.minute)
+	duration = dt.timedelta(days=duration.day - 1, hours=duration.hour, minutes=duration.minute)
 
 	return duration
+
 
 def main():
 	dbf.createDataBase()
@@ -64,7 +70,7 @@ def main():
 			rows = gameRows(game, df)
 			for i in range(rows.shape[0]):
 				gameRow = rows.loc[i, ['Date', game]]
-				startTime = dt.datetime(year = year, month = month, day = gameRow['Date'])
+				startTime = dt.datetime(year=year, month=month, day=gameRow['Date'])
 				duration = convertDuration(gameRow[game])
 				endTime = startTime + duration
 				row = {'name': game, 'startTime': startTime, 'endTime': endTime, 'duration': str(duration)}
@@ -73,5 +79,6 @@ def main():
 		writeEnd = dt.datetime.now()
 		writeDuration = writeEnd - writeStart
 		print(str(file) + ' written in: ' + str(writeDuration))
+
 
 main()
